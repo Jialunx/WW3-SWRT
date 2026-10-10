@@ -1,0 +1,11 @@
+&POINT_NML
+  POINT%TIMESTART        =  '20250101 000000'
+  POINT%TIMESTRIDE       =  '3600.'
+  POINT%LIST             =  'all'
+  POINT%SAMEFILE         =  T
+  POINT%TYPE             =  1
+/
+&FILE_NML
+  FILE%PREFIX            =  'ww3.'
+  FILE%NETCDF            =  4
+/

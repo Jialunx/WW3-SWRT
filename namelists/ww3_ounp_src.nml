@@ -1,0 +1,21 @@
+&POINT_NML
+  POINT%TIMESTART        =  '20250101 000000'
+  POINT%TIMESTRIDE       =  '3600.'
+  POINT%LIST             =  'all'
+  POINT%SAMEFILE         =  T
+  POINT%TYPE             =  3
+/
+&FILE_NML
+  FILE%PREFIX            =  'ww3_src.'
+  FILE%NETCDF            =  4
+/
+&SOURCE_NML
+  SOURCE%OUTPUT          =  4
+  SOURCE%SPECTRUM        =  T
+  SOURCE%INPUT           =  T
+  SOURCE%INTERACTIONS    =  T
+  SOURCE%DISSIPATION     =  T
+  SOURCE%BOTTOM          =  T
+  SOURCE%ICE             =  T
+  SOURCE%TOTAL           =  T
+/

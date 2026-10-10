@@ -1,0 +1,7 @@
+build/
+run_*/
+*.nc
+*.ww3
+*.so
+*.o
+*.mod

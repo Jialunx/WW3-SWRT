@@ -1,0 +1,52 @@
+! -------------------------------------------------------------------- !
+! WAVEWATCH III - ww3_grid.nml - Grid pre-processing                   !
+! -------------------------------------------------------------------- !
+
+&SPECTRUM_NML
+  SPECTRUM%XFR       =  1.1
+  SPECTRUM%FREQ1     =  0.03453
+  SPECTRUM%NK        =  40
+  SPECTRUM%NTH       =  24
+/
+
+&RUN_NML
+  RUN%FLCX           =  T
+  RUN%FLCY           =  T
+  RUN%FLSOU          =  T
+/
+
+&TIMESTEPS_NML
+  TIMESTEPS%DTMAX    =  900.
+  TIMESTEPS%DTXY     =  900.
+  TIMESTEPS%DTKTH    =  900.
+  TIMESTEPS%DTMIN    =  60.
+/
+
+&GRID_NML
+  GRID%NAME          =  'Global realistic test'
+  GRID%NML           =  'namelists_Global-real.nml'
+  GRID%TYPE          =  'RECT'
+  GRID%COORD         =  'SPHE'
+  GRID%CLOS          =  'SMPL'
+  GRID%ZLIM          =  -5.
+  GRID%DMIN          =  5.0
+/
+
+&RECT_NML
+  RECT%NX            =  360
+  RECT%NY            =  181
+  RECT%SX            =  1.
+  RECT%SY            =  1.
+  RECT%X0            =  0.
+  RECT%Y0            =  -90.
+/
+
+&DEPTH_NML
+  DEPTH%SF           =  -1.
+  DEPTH%FILENAME     =  'Global-real.depth'
+  DEPTH%IDLA         =  3
+/
+
+! -------------------------------------------------------------------- !
+! WAVEWATCH III - end of namelist                                      !
+! -------------------------------------------------------------------- !
