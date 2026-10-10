@@ -3,9 +3,39 @@
   "upload_type": "software",
   "description": "<p>WAVEWATCH III (version 7.14) with the sparse Webb–Resio–Tracy (SWRT) source term for the nonlinear four-wave interaction, selected by the switch NL6. SWRT keeps K mirror-image pairs of configurations of the WRT integration space, each with an optimized gain; the operator here has K = 30.</p><p>The archive contains the model source (SWRT in model/src/w3snl6md.F90), the switch file, the K = 30 operator, and the namelists and scripts of a 1° global test. The large restart and ERA5 wind inputs of the test are not included.</p>",
   "creators": [
-    {"name": "Chen, Jialun", "affiliation": "University of Oxford"}
+    {
+      "name": "Chen, Jialun",
+      "affiliation": "University of Oxford",
+      "orcid": "0000-0002-6447-5713"
+    },
+    {
+      "name": "Adcock, Thomas",
+      "affiliation": "University of Oxford",
+      "orcid": "0000-0001-7556-1193"
+    },
+    {
+      "name": "Liu, Qingxiang",
+      "affiliation": "Ocean University of China",
+      "orcid": "0000-0001-6100-0221"
+    },
+    {
+      "name": "Clark, Ronald",
+      "affiliation": "University of Oxford"
+    },
+    {
+      "name": "Tang, Tianning",
+      "affiliation": "University of Manchester",
+      "orcid": "0000-0002-6365-9342"
+    }
   ],
   "license": "LGPL-3.0-or-later",
-  "keywords": ["WAVEWATCH III", "nonlinear four-wave interaction", "Webb-Resio-Tracy", "SWRT", "spectral wave model", "ocean waves"],
+  "keywords": [
+    "WAVEWATCH III",
+    "nonlinear four-wave interaction",
+    "Webb-Resio-Tracy",
+    "SWRT",
+    "spectral wave model",
+    "ocean waves"
+  ],
   "version": "v1.0"
 }
