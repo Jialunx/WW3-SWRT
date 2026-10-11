@@ -5,3 +5,4 @@ run_*/
 *.so
 *.o
 *.mod
+__pycache__/

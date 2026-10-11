@@ -26,7 +26,6 @@ MODULE W3SNL6MD
   !/                  original loop if WW3_SWRT_KERNEL = reference.
   !/    09-Oct-2026 : WAM depth scaling of S as in Xnl (q_dscale,
   !/                  IQTYPE = 2); diagonal term unscaled as in Xnl.
-  !/                  Test copy (ww3_src_swrt_nl6_dscale) only.
   !/                  Same transfer and diagonal term to round-off.
   !/
   !  1. Purpose :
@@ -34,16 +33,16 @@ MODULE W3SNL6MD
   !     Nonlinear interactions by sparse WRT (sWRT): the WRT pair sum
   !     (Xnl, as NL2) restricted to K mirror-pair units (a row of WRT's
   !     own quadrature table plus its mirror row), one gain per unit,
-  !     deep water. This is swrt_batch of keydoc/swrt/bench/kernels.f90
-  !     for one spectrum, on E(f,theta) = A / CONX with
+  !     deep water. This is the sum of tools/swrt.py (Rows.snl) for one
+  !     spectrum, on E(f,theta) = A / CONX with
   !     CONX = CG / (2 pi SIG) (as W3SNL1); S = CONX * dE/dt.
   !     D = dS/dA per bin as Xnl (NL2) computes it for WRT (q_t13v4,
   !     diagk1 / diagk3): every term differentiated with respect to its
-  !     own N1 and N3, N2 and N4 held fixed (swrt_batch_d of
-  !     kernels.f90). D = 0 if the environment variable WW3_SWRT_DIAG
+  !     own N1 and N3, N2 and N4 held fixed (Rows.diag of
+  !     tools/swrt.py). D = 0 if the environment variable WW3_SWRT_DIAG
   !     is 0 (for sensitivity tests).
   !
-  !  2. Operator file (keydoc/swrt/ww3/nl6/export_operator.py) :
+  !  2. Operator file (tools/export_operator.py) :
   !
   !     Plain text: magic line WW3-SWRT-OPERATOR, format version (1),
   !     'nk na nr K', source name, then blocks of a name line followed
@@ -67,7 +66,8 @@ MODULE W3SNL6MD
   !
   !  4. Remarks :
   !
-  !     DEPTH is not used (deep-water operator). The SNL1 namelist of
+  !     DEPTH enters only the WAM depth factor of S (DFAC), as in Xnl
+  !     with IQTYPE = 2. The SNL1 namelist of
   !     ww3_grid (DIA parameters) is still read, but not used.
   !
   !/ ------------------------------------------------------------------- /
@@ -93,7 +93,7 @@ CONTAINS
 !>
 !> @param[in]  A      Action spectrum A(ISP), ISP = ITH + (IK-1)*NTH.
 !> @param[in]  CG     Group velocities (dimension NK).
-!> @param[in]  DEPTH  Water depth (not used).
+!> @param[in]  DEPTH  Water depth (WAM depth factor).
 !> @param[out] S      Source term, action units per second.
 !> @param[out] D      Diagonal term of the derivative, dS/dA per bin.
 !>
@@ -300,7 +300,7 @@ CONTAINS
 !> @param[in]  A      Action spectrum.
 !> @param[in]  CG     Group velocities.
 !> @param[in]  WN     Wavenumbers (not used).
-!> @param[in]  DEPTH  Water depth (not used).
+!> @param[in]  DEPTH  Water depth (WAM depth factor).
 !> @param[out] S      Source term.
 !> @param[out] D      Diagonal term.
 !>
