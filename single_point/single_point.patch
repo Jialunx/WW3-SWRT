@@ -1,0 +1,29 @@
+--- a/ww3_src/model/src/w3srcemd.F90
++++ b/ww3_src/model/src/w3srcemd.F90
+@@ -66,7 +66,7 @@
+   !
+   !/ ------------------------------------------------------------------- /
+   !/
+-  REAL, PARAMETER, PRIVATE:: OFFSET = 0.
++  REAL, PARAMETER, PRIVATE:: OFFSET = 1.
+   !/
+ CONTAINS
+   !/ ------------------------------------------------------------------- /
+--- a/ww3_src/model/src/w3snl1md.F90
++++ b/ww3_src/model/src/w3snl1md.F90
+@@ -334,15 +334,6 @@
+     CALL STRACE (IENT, 'W3SNL1')
+ #endif
+     !
+-    ! Skip-when-calm: peak action density below 1e-4 implies Hs ~ 1 cm or
+-    ! lower; the discrete-interaction Snl on such a spectrum is negligible
+-    ! compared to Sin/Sds, and computing it just wastes time on the dense
+-    ! per-cell extended-spectrum loops.
+-    IF (MAXVAL(ABS(A)) < 1.0E-4) THEN
+-      S(:) = 0.0
+-      D(:) = 0.0
+-      RETURN
+-    END IF
+     !
+     ! 1.  Calculate prop. constant --------------------------------------- *
+     !

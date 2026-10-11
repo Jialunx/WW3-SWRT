@@ -2,7 +2,7 @@
 
 WAVEWATCH III (version 7.14) with the sparse Webb–Resio–Tracy (SWRT) source term for the nonlinear four-wave interaction, selected by the switch `NL6`.
 
-SWRT keeps K mirror-image pairs of configurations of the WRT integration space, each with an optimized gain. The operator here has K = 30. This version includes
+SWRT keeps K mirror-image pairs of configurations of the WRT integration space, each with an optimized gain. The main operator has K = 30, and the operators for the other K of the paper are in `inputs/operators/`. This version includes
 
 - the vectorized loop over directions, used by default (set `WW3_SWRT_KERNEL=reference` for the original loop),
 - the WAM depth scaling in finite depth, the same factor as for DIA (`NL1`) and for WRT with `IQTYPE = 2`,
@@ -16,11 +16,13 @@ SWRT keeps K mirror-image pairs of configurations of the WRT integration space, 
 | `ww3_src/` | WAVEWATCH III source; SWRT is in `model/src/w3snl6md.F90` |
 | `switch` | WAVEWATCH III switches (`NL6` selects SWRT) |
 | `inputs/swrt_K30.ww3op` | SWRT operator, K = 30 |
+| `inputs/operators/` | SWRT operators for the other K of the paper (K = 1–10, 20, 50, 75, 100, 200) |
 | `inputs/ftz.c` | flush-to-zero library for `LD_PRELOAD` |
 | `inputs/Global-real.depth`, `inputs/points.list` | bathymetry and output points of a 1° global test |
 | `namelists/` | namelists of the global test |
 | `scripts/` | build, run-directory and Slurm scripts, written for an HPC cluster with environment modules (adapt module names and paths) |
 | `tools/` | scripts that make the SWRT operator for another spectral grid (`tools/README.md`) |
+| `single_point/` | setups of the six single-point simulations of the paper, with a patch for their build (`single_point/README.md`) |
 
 Two inputs of the global test are not included because of their size: the initial condition `restart_ic_20250101.ww3` (138 MB) and the ERA5 wind forcing `wind_1deg_global_20250101to15.nc` (351 MB, 1°, 1–15 January 2025). Prepare the wind file from ERA5 10-m winds, and provide an initial condition or start from rest, before running `scripts/02_prep_run.sh`.
 
