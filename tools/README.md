@@ -1,6 +1,6 @@
 # Making an SWRT operator for another spectral grid
 
-The operator file `inputs/swrt_K30.ww3op` belongs to one spectral grid (40 frequencies from 0.03453 Hz with a ratio of 1.1,
+The operator file `inputs/swrt_K36.ww3op` belongs to one spectral grid (40 frequencies from 0.03453 Hz with a ratio of 1.1,
 24 directions), and NL6 stops if the model's grid differs. The scripts here make the operator for any grid of the same kind
 by the steps of the paper:
 
@@ -10,8 +10,14 @@ by the steps of the paper:
    the table reproduces WRT, and this is checked on held-out practice spectra (`check_operator.py`).
 3. Practice spectra are generated from formulas, a JONSWAP family with one and two peaks, 1500 per seed (`make_synthetic.py`).
    No model output and no WRT result is used.
-4. The K configurations (mirror-image pairs of rows) are chosen by a greedy search with swaps, and their gains by linear
-   least squares, so that they reproduce the full table on the practice spectra (`build_swrt.py`).
+4. The K configurations (mirror-image pairs of rows) are chosen by a search, and their gains by linear least squares, so
+   that they reproduce the full table on the practice spectra (`build_swrt.py`). With a limit L on the offsets (di, dj) of
+   k3 from k1 that the rows of the configurations use (`--offsets L`), the search is that of the paper: greedy selection
+   under the limit with swaps, then six random sets within the limit and 30 random replacements of three to six
+   configurations, each followed by swaps, in three independent runs (`--search-seeds 11,12,13`); the set with the smallest
+   error is retained. Without a limit, the search is the greedy selection with swaps of v1.2. The limit can also come from
+   a cost model of S_nl, t = C0 + A K + B L, with the cost TDIA of DIA (`--cost C0,A,B,TDIA --line 4`: for each K, the
+   largest L at four times the cost of DIA).
 5. The operator is written in the plain-text format that NL6 reads (`export_operator.py`).
 6. Checks on held-out practice spectra: the error of each operator against WRT, and NL6 itself (`w3snl6md.F90`, compiled
    standalone) against the Python operator (`check_operator.py`, `check_nl6.py`).
@@ -26,12 +32,21 @@ the grid: about 1.5 GB for the paper's grid and 3 GB for 36 frequencies and 36 d
 
 ```
 bash tools/build_xnl.sh                       # once: Xnl as a Python module (tools/build/xnl_wrt*.so)
+python3 tools/make_operator.py --f1 0.03453 --ratio 1.1 --nf 40 --ndir 24 --work work_40x24 --ks 36 --offsets 19   # the paper's SWRT
 python3 tools/make_operator.py --f1 0.0345 --ratio 1.1 --nf 36 --ndir 36 --work work_36x36 --ks 30
 ```
 
-`--f1`, `--ratio`, `--nf` and `--ndir` are `FREQ%F1`, `FREQ%XFR`, `FREQ%NK` and `FREQ%NTH` of `ww3_grid.nml`. The result is
-`work_36x36/swrt_K30.ww3op`. Copy it to the run directory as `swrt_operator.ww3op`, or set `WW3_SWRT_OPERATOR` to its path.
-Several values of K can be made at once (`--ks 10,30`).
+`--f1`, `--ratio`, `--nf` and `--ndir` are `SPECTRUM%FREQ1`, `SPECTRUM%XFR`, `SPECTRUM%NK` and `SPECTRUM%NTH` of
+`ww3_grid.nml`. The results are `work_40x24/swrt_K36.ww3op` and `work_36x36/swrt_K30.ww3op`. Copy an operator file to the
+run directory as `swrt_operator.ww3op`, or set `WW3_SWRT_OPERATOR` to its path.
+
+On the paper's grid, the cost model of the routines of WAVEWATCH III, built with -O3 and timed on 15 000 practice spectra,
+was C0 = 4.77, A = 1.338 and B = 1.039 µs, with TDIA = 18.20 µs per spectrum. At four times the cost of DIA this gives
+L = 19 for K = 36, and K = 36 had the smallest error of all K on that line. The best set found under this limit uses 18
+offsets. These values depend on the machine, the compiler and the grid. The timing program of the paper is not part of
+the archive; timing W3SNL6 and W3SNL1 of a model build on the practice spectra for a few sets of different K and L, and a
+least-squares fit of t = C0 + A K + B L, gives them for another grid.
+Several values of K can be made at once (`--ks 10,30`), each with the limit of `--offsets` or of `--cost` and `--line`.
 
 The work directory keeps every intermediate file, and `make_operator.json` summarizes the table, the checks and the errors.
 A work directory belongs to one grid and one set of practice-spectrum ranges (`grid.json`), and `make_operator.py` stops if
@@ -61,15 +76,18 @@ with `-h`.
 The Gram matrices of the 15 000 practice spectra take most of the time. For the paper's grid they took 17 minutes on an
 otherwise idle Intel i9-11900K. The test runs below, made while several other jobs shared that machine, took 50 minutes for
 the paper's grid and 68 minutes for 36 frequencies and 36 directions.
+The search under an offset limit takes one to two minutes per run for K = 36 on the paper's grid.
 
 ## Checks
 
-- **The paper's operator is reproduced.** For the paper's grid, `make_operator.py` gives the same table (bit for bit),
-  the same practice spectra, the same configurations and gains, and an operator file identical to `inputs/swrt_K30.ww3op`.
-  The same holds for K = 10, 20 and 50 against the files of the paper's runs (not included here): the configurations are
-  those of the paper, the gains agree to 1e-14, and the files are identical. The full table reproduces WRT to 5e-5 of the
-  largest transfer on 300 held-out spectra, and NL6 reproduces the Python operator to 1e-6.
-- **Another grid.** For 36 frequencies from 0.03453 Hz (ratio 1.1) and 36 directions, the table has 807 configurations
+- **The paper's operator is reproduced.** For the paper's grid, `make_operator.py` gives the same table (bit for bit)
+  and the same practice spectra as the paper, and Gram matrices that agree with the paper's to round-off (v1.2). With
+  `--ks 36 --offsets 19`, the three runs of the search (v1.3) give the same sets and errors as the paper's runs, and the
+  run with seed 12 gives the configurations of the paper's SWRT. Its operator file (rows grouped by resonance curve) is
+  `inputs/swrt_K36.ww3op`, and it agrees with the file of the paper's runs except for the line with the source name. The
+  full table reproduces WRT to 5e-5 of the largest transfer on 300 held-out spectra. On the 80 test spectra of the paper,
+  NL6 (v1.3) reproduces the Python operator to 8e-7 in S_nl and 2e-7 in the diagonal term.
+- **Another grid** (v1.2, search without an offset limit). For 36 frequencies from 0.03453 Hz (ratio 1.1) and 36 directions, the table has 807 configurations
   (592 on the paper's grid), and the full table reproduces WRT to 4e-5. On held-out practice spectra, the median error of
   SWRT against WRT (`check_operator.py`) is 0.08 with K = 30 and 0.36 with K = 10, against 0.06 and 0.20 on the paper's
   grid. A grid with more directions thus needs more configurations for the same error. NL6 reproduces the Python operator

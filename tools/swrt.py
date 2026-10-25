@@ -12,7 +12,7 @@ The anchor gains what the partner loses in action (a(i3) a(i) on both sides), so
 SWRT = c * sum over kept units g_u * (row + its mirror row). The full table (all units, g = 1, c = 1) is WRT.
 
     from swrt import SWRT
-    S = SWRT("swrt_K30.npz").snl(E)      # E (nk, na) or (n, nk, na)
+    S = SWRT("swrt_K36.npz").snl(E)      # E (nk, na) or (n, nk, na)
 """
 import numpy as np
 

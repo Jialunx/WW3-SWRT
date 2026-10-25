@@ -15,12 +15,12 @@ Each directory holds the inputs of `ww3_grid`, `ww3_strt`, `ww3_shel` and `ww3_o
 
 ## Build
 
-The single-point simulations use two settings that differ from the source in `ww3_src/`, which is set up for the global test:
+The single-point simulations use two settings that differ from the source in `ww3_src/`, which is set up for the global simulation:
 
 - the semi-implicit integration of the source terms, with the diagonal term of S_nl, where `ww3_src/` integrates explicitly (`OFFSET = 0` in `w3srcemd.F90`);
 - the DIA of WAVEWATCH III, where the DIA of `ww3_src/` skips spectra whose largest action density is below 1e-4.
 
-`single_point.patch` restores both. Apply it in a separate copy of the archive, because the global test needs the unpatched source. In the top directory of that copy:
+`single_point.patch` restores both. Apply it in a separate copy of the archive, because the global simulation needs the unpatched source. In the top directory of that copy:
 
 ```
 patch -p1 < single_point/single_point.patch
@@ -31,19 +31,19 @@ for n in 6 2 1; do                    # NL6 = SWRT, NL2 = WRT (Xnl), NL1 = DIA
 done
 ```
 
-`single_point/switch` is the switch file of the global test with `SHRD` (one process) in place of `DIST MPI`.
+`single_point/switch` is the switch file of the global simulation with `SHRD` (one process) in place of `DIST MPI`.
 
 ## Run
 
 ```
 bash single_point/run.sh g20 build_nl2/bin                                    # WRT
 bash single_point/run.sh g20 build_nl1/bin                                    # DIA
-bash single_point/run.sh g20 build_nl6/bin                                    # SWRT, K = 30
-bash single_point/run.sh g20 build_nl6/bin inputs/operators/swrt_K10.ww3op    # SWRT, K = 10
+bash single_point/run.sh g20 build_nl6/bin                                    # SWRT, K = 36 (inputs/swrt_K36.ww3op)
+bash single_point/run.sh g20 build_nl6/bin path/to/other.ww3op                # SWRT with another operator
 ```
 
 Each run has its own directory, `single_point/run_<scenario>_<build directory>`, with the operator name added for an operator given explicitly. The file `ww3.202501_src.nc` there holds the spectrum and the source terms every 30 min. The test spectra of the paper are spectra of the runs with WRT.
 
 ## Check
 
-Built this way with gfortran 13.3 and run on one core, the runs with WRT and with DIA reproduce the point output of the paper's runs bit for bit in all six scenarios. With SWRT (K = 10, 30 and 100), the spectra differ from those of the paper's runs by less than 1e-6 of their largest value. The reason is that `ww3_src/` multiplies the transfer of SWRT by the WAM depth factor. At a depth of 1000 m this factor differs from 1 by less than 1e-5, and the paper's runs did not apply it.
+Built this way with gfortran 13.3 and run on one core, the runs with WRT and with DIA reproduce the point output of the paper's runs bit for bit in all six scenarios (checked with v1.2; v1.3 changes only the code of SWRT). With SWRT (v1.3, K = 36), four of the six scenarios reproduce the paper's runs bit for bit, and in `swell_cross` and `swell_wide` the spectra differ from those of the paper's runs by less than 1e-6 of their largest value. The reason is that `ww3_src/` multiplies the transfer of SWRT by the WAM depth factor. At a depth of 1000 m this factor differs from 1 by up to 2.4e-5 in `swell_wide`, 2e-7 in `swell_cross` and less than 2e-9 in the other four scenarios, where it rounds to 1 in single precision. The paper's single-point runs did not apply it.

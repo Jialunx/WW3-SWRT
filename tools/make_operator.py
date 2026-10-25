@@ -2,18 +2,19 @@
   1  WRT (Xnl) on the grid: its quadrature database and run-time constants                          xnl_ref.py
   2  the table of WRT's working rows, and its check against WRT on held-out practice spectra         build_table.py, check_operator.py
   3  practice spectra, 1500 per seed                                                                make_synthetic.py
-  4  Gram matrices, greedy search with swaps, least-squares gains for each K                         build_swrt.py
+  4  Gram matrices, the search (greedy with swaps; with an offset limit also random restarts), gains build_swrt.py
   5  the file that NL6 reads                                                                         export_operator.py
   6  the operators' errors against WRT on the held-out spectra, and NL6 itself on them               check_operator.py, check_nl6.py
-Grid: frequencies f1 * ratio^i (i = 0 .. nf-1), ndir directions over the full circle, deep water. Give the f1 (FREQ%F1) and
-ratio (FREQ%XFR) of ww3_grid.nml; NL6 stops unless its grid matches the operator's. The work directory keeps every
+Grid: frequencies f1 * ratio^i (i = 0 .. nf-1), ndir directions over the full circle, deep water. Give the f1 (SPECTRUM%FREQ1) and
+ratio (SPECTRUM%XFR) of ww3_grid.nml; NL6 stops unless its grid matches the operator's. The work directory keeps every
 intermediate file and is tied to one grid and one set of practice-spectrum ranges (grid.json): the practice spectra and the
 Gram matrices are reused only when they belong to them.
 Constants (--constants): 'paper' takes k, cg and dk from Xnl's functions at 1000 m, as the paper did, and reproduces its
 files bit for bit; 'xnl' takes Xnl's own run-time arrays (at Xnl's deep-water depth of 2000 m), which agree better with WRT
 when the grid starts at low frequencies; 'auto' (default) is 'paper' from 0.033 Hz up and 'xnl' below.
-usage: python3 tools/make_operator.py --f1 0.03453 --ratio 1.1 --nf 40 --ndir 24 --work work_40x24 [--ks 30] [--seeds ...]
-       ->  WORK/swrt_K30.ww3op: copy it to the run directory as swrt_operator.ww3op, or set WW3_SWRT_OPERATOR to its path"""
+usage: python3 tools/make_operator.py --f1 0.03453 --ratio 1.1 --nf 40 --ndir 24 --work work_40x24 --ks 36 --offsets 19
+       ->  WORK/swrt_K36.ww3op (the paper's SWRT): copy it to the run directory as swrt_operator.ww3op, or set
+       WW3_SWRT_OPERATOR to its path. Without --offsets (or --cost and --line), the search has no offset limit and no restarts."""
 import os, sys, json, time, shutil, argparse
 import numpy as np
 
@@ -27,19 +28,20 @@ F1_AUTO = 0.033
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--f1", type=float, required=True, help="lowest frequency (Hz), FREQ%%F1 of ww3_grid.nml")
-    ap.add_argument("--ratio", type=float, required=True, help="frequency ratio, FREQ%%XFR")
-    ap.add_argument("--nf", type=int, required=True, help="number of frequencies, FREQ%%NK")
-    ap.add_argument("--ndir", type=int, required=True, help="number of directions, FREQ%%NTH")
+    ap.add_argument("--f1", type=float, required=True, help="lowest frequency (Hz), SPECTRUM%%FREQ1 of ww3_grid.nml")
+    ap.add_argument("--ratio", type=float, required=True, help="frequency ratio, SPECTRUM%%XFR")
+    ap.add_argument("--nf", type=int, required=True, help="number of frequencies, SPECTRUM%%NK")
+    ap.add_argument("--ndir", type=int, required=True, help="number of directions, SPECTRUM%%NTH")
     ap.add_argument("--work", required=True, help="work directory (one per grid)")
-    ap.add_argument("--ks", default="30", help="numbers of kept configurations, e.g. 10,30 (default 30)")
+    ap.add_argument("--ks", default="36", help="numbers of kept configurations, e.g. 30,36 (default 36, with --offsets 19 the paper's SWRT)")
     ap.add_argument("--seeds", default="11,1,2,3,4,5,6,7,8,9", help="practice-spectrum seeds (default: the paper's ten)")
     ap.add_argument("--fp-range", default="0.05,0.30", help="peak frequencies of the single-peak practice spectra (Hz)")
     ap.add_argument("--swell-range", default="0.05,0.12", help="peak frequencies of the swells of the two-peak spectra (Hz)")
     ap.add_argument("--constants", default="auto", choices=("auto", "paper", "xnl"), help="source of k, cg and dk (see above)")
     ap.add_argument("--no-nl6-check", action="store_true", help="skip the standalone check of W3SNL6 (needs gfortran)")
+    build_swrt.add_search_args(ap)
     a = ap.parse_args(); t0 = time.time(); work = os.path.abspath(a.work); os.makedirs(work, exist_ok=True)
-    Ks = tuple(int(k) for k in a.ks.split(",")); seeds = [int(s) for s in a.seeds.split(",")]
+    Ks = tuple(int(k) for k in a.ks.split(",")); seeds = [int(s) for s in a.seeds.split(",")]; skw = build_swrt.search_kw(a, Ks)
     rng = lambda s: tuple(float(x) for x in s.split(","))
     if not a.no_nl6_check and not shutil.which("gfortran"): sys.exit("gfortran is needed for the NL6 check (or give --no-nl6-check)")
     const = a.constants if a.constants != "auto" else ("paper" if a.f1 >= F1_AUTO else "xnl")
@@ -68,7 +70,7 @@ def main():
     make_synthetic.write(work, todo, fam)
 
     print("4  selection and gains", flush=True)
-    build_swrt.build(work, seeds, Ks, c_check=True)
+    build_swrt.build(work, seeds, Ks, c_check=True, **skw)
 
     print("5  files for NL6", flush=True)
     ops = [os.path.join(work, f"swrt_K{K}.npz") for K in Ks]; ww3ops = [export_operator.export(op) for op in ops]

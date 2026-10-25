@@ -5,7 +5,7 @@ default 1000; every --stride-th of its 1500 spectra). The reference is the deep-
   operators  each operator's error, eps of van Vledder (2006, Eq. 58) on the direction-integrated transfer:
              sum_f |P(f) - Y(f)| df / sum_f |Y(f)| df, df = f (r - 1/r) / 2; median by spectrum type and overall.
 The practice-spectrum ranges are those of the work directory (grid.json of make_operator.py), or the defaults.
-usage: python3 check_operator.py --f1 0.03453 --ratio 1.1 --nf 40 --ndir 24 --work DIR [--ops DIR/swrt_K30.npz ...]
+usage: python3 check_operator.py --f1 0.03453 --ratio 1.1 --nf 40 --ndir 24 --work DIR [--ops DIR/swrt_K36.npz ...]
        ->  DIR/check.json   (needs DIR/table.npz; makes DIR/synthetic_s1000.npz if missing)"""
 import os, json, argparse
 import numpy as np

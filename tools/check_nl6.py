@@ -5,8 +5,8 @@ stand-ins of the data modules (nl6_check/nl6_stubs.F90), and driven as W3SRCE dr
 FR1 and XFR as ww3_grid builds it, A = E * CONX, S(E) = S / CONX, depth 10 km so that the WAM depth factor of W3SNL6 is 1).
 On held-out practice spectra of the grid, S and the diagonal term D are compared with swrt.SWRT(operator.npz):
 max |S_nl6 - S| / max |S| per spectrum must stay below 1e-5 (on the paper's grid it is below 1e-6).
-usage: python3 check_nl6.py --op DIR/swrt_K30.npz [--ww3op DIR/swrt_K30.ww3op] --f1 0.03453 --ratio 1.1 --nf 40 --ndir 24
-       (FR1 and XFR as in ww3_grid.nml: FREQ%F1 and FREQ%XFR; uses DIR/synthetic_s1000.npz, made by check_operator.py)"""
+usage: python3 check_nl6.py --op DIR/swrt_K36.npz [--ww3op DIR/swrt_K36.ww3op] --f1 0.03453 --ratio 1.1 --nf 40 --ndir 24
+       (FR1 and XFR as in ww3_grid.nml: SPECTRUM%FREQ1 and SPECTRUM%XFR; uses DIR/synthetic_s1000.npz, made by check_operator.py)"""
 import os, sys, shutil, argparse, subprocess, tempfile
 import numpy as np
 import swrt

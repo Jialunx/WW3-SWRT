@@ -1,13 +1,13 @@
 """Write an SWRT operator (swrt_K*.npz of build_swrt.py) as the plain-text file that WAVEWATCH III's NL6 reads
 (ww3_src/model/src/w3snl6md.F90). The file holds the row arrays of the compiled kernel, so that W3SNL6 only reads and applies them.
 
-usage: python3 export_operator.py --op DIR/swrt_K30.npz [--out FILE]   ->  FILE (default DIR/swrt_K30.ww3op)
+usage: python3 export_operator.py --op DIR/swrt_K36.npz [--out FILE]   ->  FILE (default DIR/swrt_K36.ww3op)
 
 Format (version 1, plain text, read with list-directed Fortran READ; integers %d, reals %.9e, which round-trips REAL*4):
     WW3-SWRT-OPERATOR          magic line
     1                          format version
     nk na nr K                 frequencies, directions, rows, mirror-pair units (nr = 2 K)
-    swrt_K30.npz               source operator file (name only)
+    swrt_K36.npz               source operator file (name only)
 followed by one block per array: a line with the array name, then its values (fastest index first):
     sigma(nk)                  radian frequencies of the table grid (rad/s); W3SNL6 checks WAVEWATCH III's SIG against them
     di dj(nr)                  k3 offset in frequency / direction bins
@@ -17,6 +17,8 @@ followed by one block per array: a line with the array name, then its values (fa
     qfrac                      density filter: skip a pair if N1 and N3 < qfrac * max(N) * kpow(i3)
     kpow(nk)                   (k1 / k)^7.5
 The gains are the operator's g_row times its c (c = 1 for every operator written by build_swrt.py).
+The rows are written grouped by resonance curve (sorted by di, then dj; stable), because the default kernel of W3SNL6 shares the
+k1 and k3 work of the rows of one curve. The order of the rows changes the result only by round-off.
 W3SNL6 stops with a message unless nk = NK, na = NTH and sigma = SIG to a relative 1e-5."""
 import os, argparse
 import numpy as np
@@ -62,9 +64,16 @@ def write(path, a, per_line=8):
         block(f, "conv", a["conv"], "%.9e"); block(f, "qfrac", [a["qfrac"]], "%.9e"); block(f, "kpow", a["kpow"], "%.9e")
 
 
+def group_rows(a):
+    """the rows of one resonance curve (same di, dj) next to each other, sorted by di, then dj (stable)"""
+    o = np.lexsort((a["dj"], a["di"]))
+    for n in NAMES: a[n] = a[n][o] if a[n].ndim == 1 else np.asfortranarray(a[n][:, o])
+    return a
+
+
 def export(op, out=None):
     out = out or os.path.splitext(op)[0] + ".ww3op"
-    arr = kernel_arrays(op); write(out, arr)
+    arr = group_rows(kernel_arrays(op)); write(out, arr)
     print(f"wrote {out}: K = {arr['K']}, {arr['nr']} rows, nk = {arr['nk']}, na = {arr['na']} (from {arr['source']})")
     return out
 

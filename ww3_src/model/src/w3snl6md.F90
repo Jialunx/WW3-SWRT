@@ -1,14 +1,14 @@
 !> @file
 !> @brief Nonlinear 4-wave interactions by sparse WRT (sWRT), NL6 slot.
 !>
-!> @date   07-Oct-2026
+!> @date   25-Oct-2026
 !>
 
 #include "w3macros.h"
 !/ ------------------------------------------------------------------- /
 !>
 !> @brief sWRT: the WRT pair sum restricted to K mirror-pair units of
-!>  its quadrature table, one gain per unit (deep water).
+!>  its quadrature table, one gain per unit (WAM depth factor).
 !>
 MODULE W3SNL6MD
   !/
@@ -16,7 +16,7 @@ MODULE W3SNL6MD
   !/                  | WAVEWATCH III                     |
   !/                  |      sWRT (sparse WRT) as NL6     |
   !/                  |                        FORTRAN 90 |
-  !/                  | Last update :         07-Oct-2026 |
+  !/                  | Last update :         25-Oct-2026 |
   !/                  +-----------------------------------+
   !/
   !/    24-Sep-2026 : Origination, replaces the ONNX surrogate of the
@@ -24,21 +24,30 @@ MODULE W3SNL6MD
   !/    24-Sep-2026 : Diagonal term as in Xnl (was D = 0).
   !/    07-Oct-2026 : Vectorized loop (FASTLOOP) by default; the
   !/                  original loop if WW3_SWRT_KERNEL = reference.
+  !/                  Same transfer and diagonal term to round-off.
   !/    09-Oct-2026 : WAM depth scaling of S as in Xnl (q_dscale,
   !/                  IQTYPE = 2); diagonal term unscaled as in Xnl.
-  !/                  Same transfer and diagonal term to round-off.
+  !/                  DEPTH enters only this factor.
+  !/    20-Oct-2026 : Rows grouped by resonance curve (LOCUSLOOP) by
+  !/                  default: the rows of one curve share N1 and N3,
+  !/                  so two sums per curve give the transfer and the
+  !/                  diagonal term; anchors up to NKLIM (0: all).
+  !/                  WW3_SWRT_KERNEL = vector selects FASTLOOP,
+  !/                  = reference the original loop.
+  !/    25-Oct-2026 : W3SRCE sets NKLIM = 0, so that S_nl is computed
+  !/                  at all frequencies, as with DIA and WRT.
   !/
   !  1. Purpose :
   !
   !     Nonlinear interactions by sparse WRT (sWRT): the WRT pair sum
   !     (Xnl, as NL2) restricted to K mirror-pair units (a row of WRT's
   !     own quadrature table plus its mirror row), one gain per unit,
-  !     deep water. This is the sum of tools/swrt.py (Rows.snl) for one
-  !     spectrum, on E(f,theta) = A / CONX with
-  !     CONX = CG / (2 pi SIG) (as W3SNL1); S = CONX * dE/dt.
-  !     D = dS/dA per bin as Xnl (NL2) computes it for WRT (q_t13v4,
-  !     diagk1 / diagk3): every term differentiated with respect to its
-  !     own N1 and N3, N2 and N4 held fixed (Rows.diag of
+  !     times the WAM depth factor of Xnl. The transfer is that of the
+  !     Python operator of tools/swrt.py, for one spectrum, on
+  !     E(f,theta) = A / CONX with CONX = CG / (2 pi SIG) (as W3SNL1);
+  !     S = CONX * dE/dt. D = dS/dA per bin as Xnl (NL2) computes it
+  !     for WRT (q_t13v4, diagk1 / diagk3): every term differentiated
+  !     with respect to its own N1 and N3, N2 and N4 held fixed (as
   !     tools/swrt.py). D = 0 if the environment variable WW3_SWRT_DIAG
   !     is 0 (for sensitivity tests).
   !
@@ -66,16 +75,15 @@ MODULE W3SNL6MD
   !
   !  4. Remarks :
   !
-  !     DEPTH enters only the WAM depth factor of S (DFAC), as in Xnl
-  !     with IQTYPE = 2. The SNL1 namelist of
-  !     ww3_grid (DIA parameters) is still read, but not used.
+  !     DEPTH enters only the WAM depth factor of S. The SNL1 namelist
+  !     of ww3_grid (DIA parameters) is still read, but not used.
   !
   !/ ------------------------------------------------------------------- /
   IMPLICIT NONE
   PRIVATE
-  PUBLIC :: W3SNL6, W3SNLGQM, INSNL1, INSNLGQM
+  PUBLIC :: W3SNL6, W3SNLGQM, INSNL1, INSNLGQM, NKLIM
   !/
-  !/ Operator: the row arrays of swrt_batch, read once by SWRTRD
+  !/ Operator: the row arrays of the kernel, read once by SWRTRD
   !/
   LOGICAL, SAVE              :: OPREAD = .FALSE.
   INTEGER, SAVE              :: NR = 0
@@ -85,6 +93,11 @@ MODULE W3SNL6MD
   REAL, SAVE                 :: QFRAC = 0.
   LOGICAL, SAVE              :: DODIAG = .TRUE.
   LOGICAL, SAVE              :: FASTK  = .FALSE.
+  !/ Rows grouped by resonance curve (same di, dj): curve G holds rows
+  !/ GS(G) to GS(G+1)-1; NKLIM = last anchor bin (0: all), set by W3SRCE
+  LOGICAL, SAVE              :: LOCUSK = .FALSE.
+  INTEGER, SAVE              :: NG = 0, NKLIM = 0
+  INTEGER, ALLOCATABLE, SAVE :: GS(:)
   !/
 CONTAINS
   !/ ------------------------------------------------------------------- /
@@ -93,7 +106,7 @@ CONTAINS
 !>
 !> @param[in]  A      Action spectrum A(ISP), ISP = ITH + (IK-1)*NTH.
 !> @param[in]  CG     Group velocities (dimension NK).
-!> @param[in]  DEPTH  Water depth (WAM depth factor).
+!> @param[in]  DEPTH  Water depth (WAM depth factor of S).
 !> @param[out] S      Source term, action units per second.
 !> @param[out] D      Diagonal term of the derivative, dS/dA per bin.
 !>
@@ -130,9 +143,11 @@ CONTAINS
     SE   = 0.
     DE   = 0.
     !
-    ! 2.  Rows x anchor bins (i1,j1): swrt_batch of bench/kernels.f90
+    ! 2.  Rows x anchor bins (i1,j1)
     !
-    IF ( FASTK ) THEN
+    IF ( LOCUSK ) THEN
+      CALL LOCUSLOOP
+    ELSE IF ( FASTK ) THEN
       CALL FASTLOOP
     ELSE
     DO R=1, NR
@@ -185,6 +200,22 @@ CONTAINS
     !
   CONTAINS
     !/ ------------------------------------------------------------------- /
+    SUBROUTINE CORNER ( I0, FIN, IA, IB, FU )
+      ! Frequency corners as swrt.Rows._corners: lower corner clamped to
+      ! the grid with fraction 0 when it is off the grid, upper = IA+1.
+      INTEGER, INTENT(IN)  :: I0
+      REAL,    INTENT(IN)  :: FIN
+      INTEGER, INTENT(OUT) :: IA, IB
+      REAL,    INTENT(OUT) :: FU
+      IA = I0
+      FU = FIN
+      IF ( IA.LT.1 .OR. IA.GT.NK ) THEN
+        FU = 0.
+        IA = MIN ( MAX ( IA, 1 ), NK )
+      END IF
+      IB = MIN ( IA+1, NK )
+    END SUBROUTINE CORNER
+    !/ ------------------------------------------------------------------- /
     REAL FUNCTION DFAC ( A, CG, DEPTH )
       ! WAM depth factor of Xnl (q_dscale): mean wavenumber of the action
       ! sigma spectrum A/CG with weights k**(-1/2), steps of z_steps,
@@ -219,22 +250,6 @@ CONTAINS
         DFAC = 1.
       END IF
     END FUNCTION DFAC
-    !/ ------------------------------------------------------------------- /
-    SUBROUTINE CORNER ( I0, FIN, IA, IB, FU )
-      ! Frequency corners as swrt.Rows._corners: lower corner clamped to
-      ! the grid with fraction 0 when it is off the grid, upper = IA+1.
-      INTEGER, INTENT(IN)  :: I0
-      REAL,    INTENT(IN)  :: FIN
-      INTEGER, INTENT(OUT) :: IA, IB
-      REAL,    INTENT(OUT) :: FU
-      IA = I0
-      FU = FIN
-      IF ( IA.LT.1 .OR. IA.GT.NK ) THEN
-        FU = 0.
-        IA = MIN ( MAX ( IA, 1 ), NK )
-      END IF
-      IB = MIN ( IA+1, NK )
-    END SUBROUTINE CORNER
     !/ ------------------------------------------------------------------- /
     SUBROUTINE FASTLOOP
       ! The loop of section 2 reorganized for SIMD (the default):
@@ -291,6 +306,95 @@ CONTAINS
         DE(K1,:) = DX(1:NTH,K1) + DX(1-NTH:0,K1) + DX(NTH+1:2*NTH,K1)
       END DO
     END SUBROUTINE FASTLOOP
+    !/ ------------------------------------------------------------------- /
+    SUBROUTINE LOCUSLOOP
+      ! FASTLOOP with the rows taken curve by curve (the default). All rows
+      ! of a resonance curve share k1 and k3, hence N1 and N3, so the sums
+      ! A = sum W (N4 - N2) and B = sum W N2 N4 over its rows give the
+      ! transfer T = N1 N3 A + (N3 - N1) B and the diagonal terms
+      ! dT/dN1 = N3 A - B and dT/dN3 = N1 A + B, deposited once per curve.
+      ! A curve is skipped at an anchor when the frequency rows of k1 and k3
+      ! are both under the density threshold (every term is masked there).
+      ! Anchors run up to NKLIM when W3SRCE has set it (WAVEWATCH III
+      ! replaces the spectrum above its last prognostic bin).
+      REAL    :: NX(1-NTH:2*NTH,NK), SX(1-NTH:2*NTH,NK), DX(1-NTH:2*NTH,NK)
+      REAL    :: X1(NTH), X3(NTH), MM(NTH), AA(NTH), BB(NTH), AS1(NTH), &
+                 AD1(NTH), RMX(NK)
+      REAL    :: QM, X2, X4, A2, B2, A4, B4, WR, WA, WP, U2, U4, TS
+      INTEGER :: G, RR, R0, K1, K3, JJ, O3, O2, O4, KA2, KB2, KA4, KB4,   &
+                 NU, KMX
+      DO K1=1, NK
+        NX(1:NTH,K1)       = N(K1,:)
+        NX(1-NTH:0,K1)     = N(K1,:)
+        NX(NTH+1:2*NTH,K1) = N(K1,:)
+        RMX(K1)            = MAXVAL(N(K1,:))
+      END DO
+      SX = 0.
+      DX = 0.
+      KMX = NK
+      IF ( NKLIM .GT. 0 ) KMX = MIN ( NK, NKLIM )
+      DO K1=1, KMX
+        X1(1:NTH) = NX(1:NTH,K1)
+        AS1 = 0.
+        AD1 = 0.
+        DO G=1, NG
+          R0 = GS(G)
+          O3 = DJ(R0)
+          K3 = K1 + DI(R0)
+          IF ( K3 .GT. NK ) CYCLE
+          QM = QFRAC * NMAX * KPOW(K3)
+          IF ( RMX(K1).LT.QM .AND. RMX(K3).LT.QM ) CYCLE
+          DO JJ=1, NTH
+            X3(JJ) = NX(JJ+O3,K3)
+            MM(JJ) = MERGE ( 1., 0., X1(JJ).GE.QM .OR. X3(JJ).GE.QM )
+          END DO
+          AA = 0.
+          BB = 0.
+          NU = 0
+          DO RR=GS(G), GS(G+1)-1
+            WR = W(K1,RR)
+            IF ( WR .EQ. 0. ) CYCLE
+            NU = NU + 1
+            O2 = J2(RR)
+            O4 = J4(RR)
+            B2 = G2(RR)
+            A2 = 1. - B2
+            B4 = G4(RR)
+            A4 = 1. - B4
+            CALL CORNER ( K1+I2(RR), F2(RR), KA2, KB2, U2 )
+            CALL CORNER ( K1+I4(RR), F4(RR), KA4, KB4, U4 )
+            DO JJ=1, NTH
+              X2 = (1.-U2) * ( A2*NX(JJ+O2,KA2) + B2*NX(JJ+O2+1,KA2) )   &
+                 +     U2  * ( A2*NX(JJ+O2,KB2) + B2*NX(JJ+O2+1,KB2) )
+              X4 = (1.-U4) * ( A4*NX(JJ+O4,KA4) + B4*NX(JJ+O4+1,KA4) )   &
+                 +     U4  * ( A4*NX(JJ+O4,KB4) + B4*NX(JJ+O4+1,KB4) )
+              AA(JJ) = AA(JJ) + WR * ( X4 - X2 )
+              BB(JJ) = BB(JJ) + WR * X2 * X4
+            END DO
+          END DO
+          IF ( NU .EQ. 0 ) CYCLE
+          WA = FA(K1,R0)
+          WP = FP(K1,R0)
+          DO JJ=1, NTH
+            TS = MM(JJ) * ( X1(JJ)*X3(JJ)*AA(JJ) + (X3(JJ)-X1(JJ))*BB(JJ) )
+            AS1(JJ) = AS1(JJ) + TS * WA
+            SX(JJ+O3,K3) = SX(JJ+O3,K3) - TS * WP
+          END DO
+          IF ( DODIAG ) THEN
+            DO JJ=1, NTH
+              AD1(JJ) = AD1(JJ) + MM(JJ) * ( X3(JJ)*AA(JJ) - BB(JJ) ) * WA
+              DX(JJ+O3,K3) = DX(JJ+O3,K3) - MM(JJ) * ( X1(JJ)*AA(JJ) + BB(JJ) ) * WP
+            END DO
+          END IF
+        END DO
+        SX(1:NTH,K1) = SX(1:NTH,K1) + AS1
+        DX(1:NTH,K1) = DX(1:NTH,K1) + AD1
+      END DO
+      DO K1=1, NK
+        SE(K1,:) = SX(1:NTH,K1) + SX(1-NTH:0,K1) + SX(NTH+1:2*NTH,K1)
+        DE(K1,:) = DX(1:NTH,K1) + DX(1-NTH:0,K1) + DX(NTH+1:2*NTH,K1)
+      END DO
+    END SUBROUTINE LOCUSLOOP
     !/
   END SUBROUTINE W3SNL6
   !/ ------------------------------------------------------------------- /
@@ -300,7 +404,7 @@ CONTAINS
 !> @param[in]  A      Action spectrum.
 !> @param[in]  CG     Group velocities.
 !> @param[in]  WN     Wavenumbers (not used).
-!> @param[in]  DEPTH  Water depth (WAM depth factor).
+!> @param[in]  DEPTH  Water depth (WAM depth factor of S).
 !> @param[out] S      Source term.
 !> @param[out] D      Diagonal term.
 !>
@@ -428,17 +532,37 @@ CONTAINS
     CALL GET_ENVIRONMENT_VARIABLE ( 'WW3_SWRT_DIAG', DGVAL, ILEN, IERR )
     DODIAG = .NOT. ( IERR.EQ.0 .AND. TRIM(ADJUSTL(DGVAL)).EQ.'0' )
     !
-    ! 5.  Vectorized loop (default) or the original loop (WW3_SWRT_KERNEL
-    !     = reference, for checks)
+    ! 5.  Rows grouped by resonance curve (default), the vectorized row
+    !     loop (WW3_SWRT_KERNEL = vector) or the original loop
+    !     (WW3_SWRT_KERNEL = reference, for checks)
     !
     CALL GET_ENVIRONMENT_VARIABLE ( 'WW3_SWRT_KERNEL', DGVAL, ILEN, IERR )
-    FASTK = .NOT. ( IERR.EQ.0 .AND. TRIM(ADJUSTL(DGVAL)).EQ.'reference' )
+    FASTK  = .NOT. ( IERR.EQ.0 .AND. TRIM(ADJUSTL(DGVAL)).EQ.'reference' )
+    LOCUSK = FASTK .AND. .NOT. ( IERR.EQ.0 .AND. TRIM(ADJUSTL(DGVAL)).EQ.'vector' )
     IF ( FASTK .AND. ( MINVAL(J2).LT.-NTH .OR. MAXVAL(J2).GT.NTH-1 .OR. &
          MINVAL(J4).LT.-NTH .OR. MAXVAL(J4).GT.NTH-1 .OR.               &
          MAXVAL(ABS(DJ)).GT.NTH ) )                                      &
          CALL SWRTER ( 'direction offsets too large for the fast loop' )
     IF ( IAPROC.EQ.NAPOUT .AND. .NOT.FASTK ) WRITE (NDSO,'(A)')         &
          '  W3SNL6 : original loop (WW3_SWRT_KERNEL = reference)'
+    IF ( LOCUSK ) THEN
+      ! curves = runs of rows with the same (di, dj); the operator files
+      ! list the rows of a curve together
+      ALLOCATE ( GS(NR+1) )
+      NG    = 1
+      GS(1) = 1
+      DO IK=2, NR
+        IF ( DI(IK).NE.DI(IK-1) .OR. DJ(IK).NE.DJ(IK-1) ) THEN
+          NG     = NG + 1
+          GS(NG) = IK
+        END IF
+      END DO
+      GS(NG+1) = NR + 1
+      IF ( IAPROC.EQ.NAPOUT ) WRITE (NDSO,'(A,I0,A)')                   &
+           '  W3SNL6 : rows grouped by resonance curve, ', NG, ' curves'
+    ELSE IF ( IAPROC.EQ.NAPOUT .AND. FASTK ) THEN
+      WRITE (NDSO,'(A)') '  W3SNL6 : vectorized row loop (WW3_SWRT_KERNEL = vector)'
+    END IF
     !
     IF ( IAPROC .EQ. NAPOUT ) WRITE (NDSO,900) TRIM(FNAME),            &
          TRIM(SRCNAM), KU, NR, MERGE('on ','off',DODIAG)

@@ -1235,6 +1235,11 @@ CONTAINS
 #endif
 #ifdef W3_NL6
       IF (IQTPE.GT.0) THEN
+        ! all anchor bins (2026-10-25: no cut at the tail, so that SWRT
+        ! computes S_nl at every frequency as DIA, WRT and GMD do; the cut
+        ! at the last prognostic bin, NKH1 of section 3, was
+        ! NKLIM = MIN ( NK , MIN ( NK , INT(FACTI2+FACTI1*LOG(MAX(1.E-7,FHIGH))) ) + 1 ))
+        NKLIM = 0
         CALL W3SNL6 ( SPEC, CG1, DEPTH, VSNL, VDNL )
       ELSE
         CALL W3SNLGQM ( SPEC, CG1, WN1, DEPTH, VSNL, VDNL )
