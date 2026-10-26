@@ -27,7 +27,7 @@ The code of `w3snl6md.F90` and `w3srcemd.F90` is that of the paper's global simu
 | `tools/` | scripts that make the SWRT operator for another spectral grid, with the search of the paper (`tools/README.md`) |
 | `single_point/` | setups of the six single-point simulations of the paper, with a patch for their build (`single_point/README.md`) |
 
-The operators of v1.2 (K = 30, and those for other K in `inputs/operators/`) came from an earlier selection and are not part of this version. They remain in the v1.2 archive.
+The operators of v1.2 (K = 30, and those for other K in `inputs/operators/`) came from an earlier selection and are not part of this version. They remain in the v1.2 archive. v1.4 changes only the hybrid: opposing seas are found from the f⁴-weighted directional distribution, and the sets for broad seas and opposing seas are those selected under this rule, as in the current version of the paper.
 
 Two inputs of the global simulation are not included because of their size: the initial condition `restart_ic_20250101.ww3` (138 MB) and the ERA5 wind forcing `wind_1deg_global_20250101to15.nc` (351 MB, 1°, 1–15 January 2025). Prepare the wind file from ERA5 10-m winds, and provide an initial condition or start from rest, before running `scripts/02_prep_run.sh`.
 
