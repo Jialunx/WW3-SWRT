@@ -3,81 +3,64 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Animated WRT and SWRT Equations</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=STIX+Two+Text:ital,wght@0,400;0,700;1,400&display=swap">
+<title>SWRT Supplemental Animations</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap">
 <style>
-/* Layout: one reading column of numbered steps. Each step pairs an animated figure (play, scrub, live caption) with the equation of the paper, whose terms light up in step with the animation. Steps stack to one column on phones. */
+/* Layout: a single column set like a journal supplement. Each animation is a figure with its equation above, the plot, a slim player and a caption below. */
 :root{
-  --bg:#f4f6f8; --panel:#ffffff; --fg:#16202b; --muted:#566474; --line:#d3dae2; --grid:#e1e6ec; --shade:#e8edf3; --band:#dfe7ef;
-  --k1:#c43230; --k2:#dc7a57; --k3:#245fa6; --k4:#76abde; --locus:#1b2531; --faint:#c0c9d3; --accent:#245fa6;
-  --pos:#1b7a4b; --neg:#8a3fa0; --hl:#fbe3a2; --hlfg:#16202b;
-  --display:"Source Serif 4", Georgia, "Times New Roman", serif;
-  --body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --bg:#ffffff; --panel:#ffffff; --fg:#1d1d1f; --muted:#5f6267; --line:#d9dbde; --grid:#e9eaec; --shade:#f3f4f5; --band:#e8ecf0;
+  --k1:#c43230; --k2:#dc7a57; --k3:#245fa6; --k4:#76abde; --locus:#1d1d1f; --faint:#c3c7cc; --accent:#8a5a00;
+  --pos:#1b7a4b; --neg:#8a3fa0; --hl:#f3e4bd; --hlfg:#1d1d1f;
+  --text:"STIX Two Text", "Times New Roman", Times, serif;
+  --ui:system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --body:var(--ui);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0e141a; --panel:#141c25; --fg:#e3e9f0; --muted:#9caab8; --line:#2a3644; --grid:#22303f; --shade:#1a2532; --band:#1f2c3b;
-    --k1:#ff6e62; --k2:#f3a282; --k3:#6fa9ff; --k4:#a9d1f7; --locus:#e3e9f0; --faint:#4a5868; --accent:#6fa9ff;
-    --pos:#58cf95; --neg:#cf8ff0; --hl:#5d4b16; --hlfg:#fff4d6;
+    --bg:#131416; --panel:#131416; --fg:#e6e7e9; --muted:#a3a7ad; --line:#33363b; --grid:#25282c; --shade:#1c1e21; --band:#232a33;
+    --k1:#ff6e62; --k2:#f3a282; --k3:#6fa9ff; --k4:#a9d1f7; --locus:#e6e7e9; --faint:#4b5057; --accent:#e0b25a;
+    --pos:#58cf95; --neg:#cf8ff0; --hl:#4d3d14; --hlfg:#fff4d6;
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0e141a; --panel:#141c25; --fg:#e3e9f0; --muted:#9caab8; --line:#2a3644; --grid:#22303f; --shade:#1a2532; --band:#1f2c3b;
-  --k1:#ff6e62; --k2:#f3a282; --k3:#6fa9ff; --k4:#a9d1f7; --locus:#e3e9f0; --faint:#4a5868; --accent:#6fa9ff;
-  --pos:#58cf95; --neg:#cf8ff0; --hl:#5d4b16; --hlfg:#fff4d6;
+  --bg:#131416; --panel:#131416; --fg:#e6e7e9; --muted:#a3a7ad; --line:#33363b; --grid:#25282c; --shade:#1c1e21; --band:#232a33;
+  --k1:#ff6e62; --k2:#f3a282; --k3:#6fa9ff; --k4:#a9d1f7; --locus:#e6e7e9; --faint:#4b5057; --accent:#e0b25a;
+  --pos:#58cf95; --neg:#cf8ff0; --hl:#4d3d14; --hlfg:#fff4d6;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55}
-.wrap{max-width:1080px;margin:0 auto;padding-block:32px 64px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
-.eyebrow{font-size:.78rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin:0 0 8px}
-header h1{font-family:var(--display);font-weight:700;font-size:clamp(1.9rem, 4.2vw, 2.7rem);line-height:1.12;margin:0 0 12px;text-wrap:balance}
-.lede{color:var(--muted);max-width:68ch;margin:0 0 10px}
-.legend{display:flex;flex-wrap:wrap;gap:8px 20px;margin:14px 0 0;font-size:.92rem}
-.legend span{display:inline-flex;align-items:center;gap:7px}
-.sw{width:24px;height:3px;border-radius:2px;display:inline-block}
-.sw.dash{height:0;border-top:2px dashed var(--locus);border-radius:0}
-.sw.solid{background:var(--locus)}
-.sw.box{height:12px;width:16px;border-radius:2px}
-section.part{margin-top:46px}
-.part-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;padding-bottom:6px}
-.part-head h2{font-family:var(--display);font-weight:600;font-size:1.4rem;margin:0;text-wrap:balance}
-.part-head .eqs{color:var(--muted);font-size:.92rem}
-.step{display:grid;grid-template-columns:minmax(0, 430px) minmax(0, 1fr);gap:26px;align-items:start;padding:24px 0;border-top:1px solid var(--line)}
-.fig{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px;min-width:0}
-.fig svg{display:block;width:100%;height:auto}
-.txt{min-width:0;max-width:64ch}
-.num{font-size:.8rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
-.txt h3{font-family:var(--display);font-weight:600;font-size:1.2rem;line-height:1.3;margin:2px 0 10px;text-wrap:balance}
-.txt p{margin:0 0 9px}
-.v{font-family:var(--math);font-weight:700}
-.m{font-family:var(--math);font-style:italic}
-.eqb{display:flex;align-items:center;gap:10px;background:var(--shade);border-radius:4px;padding:6px 12px;margin:0 0 12px;overflow-x:auto}
-.eqb .stack{flex:1 1 auto;min-width:0}
-.eqb math{font-size:1.06rem;margin:4px 0}
-.eqb .tag{color:var(--muted);font-family:var(--body);font-size:.78rem;white-space:nowrap}
+body{background:var(--bg);color:var(--fg);font-family:var(--text);font-size:17px;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto;padding-block:40px 72px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+header{text-align:center;margin-bottom:8px}
+h1{font-size:1.5rem;font-weight:700;margin:0 0 10px}
+.ptitle{font-style:italic;font-size:1.1rem;margin:0 auto 18px;max-width:40em;text-wrap:balance}
+.intro{text-align:left;margin:0 0 6px}
+h2{font-size:1.15rem;font-weight:700;margin:44px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+figure.anim{margin:22px 0 0;padding:0 0 22px;border-bottom:1px solid var(--grid)}
+.eq{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;margin:0 0 4px}
+.eqm{min-width:0;overflow-x:auto}
+.eqm math{font-size:1.08rem;margin:4px 0}
+.eqn{color:var(--muted);min-width:2.6em;text-align:right}
 math{font-family:"STIX Two Math", "Cambria Math", "Latin Modern Math", math}
-math .hl{border-radius:3px;transition:background-color .25s, color .25s}
+math .hl{border-radius:2px;transition:background-color .25s}
 math .hl.on{background:var(--hl);color:var(--hlfg)}
 @media (prefers-reduced-motion: reduce){math .hl{transition:none}}
-.toy{font-size:.88rem;color:var(--muted);border-left:3px solid var(--line);padding-left:10px}
-.ctl{display:flex;align-items:center;gap:10px;padding:8px 4px 0}
-.ctl .play{font:inherit;font-size:.82rem;font-weight:500;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:4px;padding:3px 0;width:68px;cursor:pointer}
-.ctl .play:hover{border-color:var(--accent)}
-.ctl input[type=range]{flex:1 1 auto;min-width:0;accent-color:var(--accent)}
-.ctl .play:focus-visible,.ctl input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.cap{margin:4px 4px 2px;font-size:.84rem;line-height:1.4;color:var(--muted);min-height:2.8em}
-.flow{display:flex;flex-direction:column;gap:6px;padding:8px}
-.box{border:1px solid var(--line);border-radius:6px;padding:9px 12px;background:var(--bg);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-.box b{font-family:var(--math);font-size:1.35rem;font-weight:700;font-variant-numeric:tabular-nums;min-width:4.2ch}
-.box span{color:var(--muted);font-size:.92rem}
-.box.next{border-style:dashed}
-.down{text-align:center;color:var(--muted);font-size:.85rem;line-height:1.1}
-footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);max-width:72ch}
+.plot{max-width:520px;margin:10px auto 0}
+.plot svg{display:block;width:100%;height:auto}
+.ctl{display:flex;align-items:center;gap:10px;padding:6px 0 0;font-family:var(--ui)}
+.ctl .play{font:inherit;font-size:.78rem;border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:3px;padding:2px 0;width:58px;cursor:pointer}
+.ctl .play:hover{border-color:var(--muted)}
+.ctl input[type=range]{flex:1 1 auto;min-width:0;accent-color:var(--muted)}
+.ctl .play:focus-visible,.ctl input:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.cap{margin:2px 0 0;font-family:var(--ui);font-size:.78rem;color:var(--muted);min-height:2.4em}
+figcaption{font-size:.95rem;line-height:1.45;margin:8px 0 0}
+figcaption b{font-weight:700}
+.v{font-weight:700}
+.m{font-style:italic}
+footer{margin-top:36px;font-size:.92rem;color:var(--muted)}
 footer p{margin:0 0 8px}
-@media (max-width:780px){.step{grid-template-columns:minmax(0,1fr);gap:14px}}
 /* figure classes */
 .ax{stroke:var(--grid);stroke-width:1;fill:none}
 .ax2{stroke:var(--line);stroke-width:1;fill:none}
@@ -105,9 +88,9 @@ footer p{margin:0 0 8px}
 .ring.off{stroke:var(--faint)}
 .ring.dashed{stroke-dasharray:3 2}
 .lbl{font-family:var(--math);font-size:14px;fill:var(--fg)}
-.lbs{font-family:var(--body);font-size:11.5px;fill:var(--muted)}
-.lbb{font-family:var(--body);font-size:12px;fill:var(--fg);font-weight:500}
-.lbx{font-family:var(--body);font-size:15px;font-weight:600;fill:var(--accent)}
+.lbs{font-family:var(--ui);font-size:11.5px;fill:var(--muted)}
+.lbb{font-family:var(--ui);font-size:12px;fill:var(--fg);font-weight:500}
+.lbx{font-family:var(--ui);font-size:15px;font-weight:600;fill:var(--accent)}
 .mth{font-family:var(--math);font-size:14px;fill:var(--fg)}
 .thin{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3;fill:none}
 .cmp3{stroke:var(--k3);stroke-width:1.2;stroke-dasharray:4 3}
@@ -116,7 +99,7 @@ footer p{margin:0 0 8px}
 .tint2{fill:var(--k2);fill-opacity:.3;stroke:var(--k2);stroke-width:1.2}
 .tint3{fill:var(--k3);fill-opacity:.28;stroke:var(--k3);stroke-width:1.2}
 .tint4{fill:var(--k4);fill-opacity:.32;stroke:var(--k4);stroke-width:1}
-.tinta{fill:var(--accent);fill-opacity:.32;stroke:var(--accent);stroke-width:1}
+.tinta{fill:var(--accent);fill-opacity:.3;stroke:var(--accent);stroke-width:1}
 .tintphi{fill:var(--accent);fill-opacity:.5}
 .tgt{fill:none;stroke:var(--fg);stroke-width:2.2}
 .ibox{fill:var(--muted);fill-opacity:.1;stroke:var(--muted);stroke-width:1;stroke-dasharray:2 2}
@@ -134,6 +117,9 @@ footer p{margin:0 0 8px}
 .barq.best{fill:var(--accent)}
 .pathline{fill:none;stroke:var(--accent);stroke-width:2}
 .pdot{fill:var(--accent)}
+.plus{stroke:var(--k3);stroke-width:1.6;fill:none}
+.end2{fill:var(--k2)}
+.end2.kept{stroke:var(--fg);stroke-width:.9}
 </style>
 
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
@@ -141,204 +127,101 @@ footer p{margin:0 0 8px}
 <body>
 <div class="wrap">
 <header>
-  <p class="eyebrow">Supplemental material · test version</p>
-  <h1>The WRT table and SWRT, equation by equation</h1>
-  <p class="lede">This page animates sections 2 and 3 of the paper “A New Nonlinear Four-Wave Interaction Scheme for Ocean Wave Models: Webb–Resio–Tracy Accuracy near DIA Cost”. Each animation follows one equation of the paper, and the terms of the equation light up as the animation reaches them.</p>
-  <p class="lede">Loci, grid points, bin areas and group velocities come from the deep-water dispersion relation on the spectral grid of the paper with 40 frequencies and 24 directions. The panels of section 3 run the least-squares fit and the greedy search on a small toy table. Each animation plays while it is on screen, and the slider under a figure moves through it by hand.</p>
-  <div class="legend" aria-label="Colour key">
-    <span><i class="sw" style="background:var(--k1)"></i><span class="v">k</span><sub>1</sub></span>
-    <span><i class="sw" style="background:var(--k2)"></i><span class="v">k</span><sub>2</sub></span>
-    <span><i class="sw" style="background:var(--k3)"></i><span class="v">k</span><sub>3</sub></span>
-    <span><i class="sw" style="background:var(--k4)"></i><span class="v">k</span><sub>4</sub></span>
-    <span><i class="sw solid"></i><span class="v">k</span><sub>2</sub>&nbsp;locus</span>
-    <span><i class="sw dash"></i><span class="v">k</span><sub>4</sub>&nbsp;locus</span>
-    <span><i class="sw box" style="background:var(--pos)"></i>gain</span>
-    <span><i class="sw box" style="background:var(--neg)"></i>loss</span>
-  </div>
+  <h1>Supplemental Material (draft)</h1>
+  <p class="ptitle">A New Nonlinear Four-Wave Interaction Scheme for Ocean Wave Models: Webb–Resio–Tracy Accuracy near DIA Cost</p>
+  <p class="intro">Animations S1–S12 show the equations of sections 2 and 3, and the terms of each equation are highlighted while its animation shows them. The geometry is computed for deep water on the spectral grid of the paper with 40 frequencies and 24 directions and with <span class="v">k</span><sub>1</sub> in frequency bin 20 (0.21 Hz). The wavenumbers <span class="v">k</span><sub>1</sub>, <span class="v">k</span><sub>2</sub>, <span class="v">k</span><sub>3</sub> and <span class="v">k</span><sub>4</sub> are drawn in red, orange, blue and light blue.</p>
 </header>
 
-<section class="part">
-  <div class="part-head"><h2>2a. The collision integral in Webb’s form</h2><span class="eqs">Eqs. (1)–(4)</span></div>
+<h2>2a. The collision integral in Webb’s form</h2>
 
-  <div class="step" id="step-f1">
-    <div class="fig" id="f1"></div>
-    <div class="txt">
-      <div class="num">Step 1</div>
-      <h3>Four waves in resonance</h3>
-      <div class="eqb"><div class="stack"><math display="block"><mrow class="hl" data-k="ks"><msub><mi>𝐤</mi><mn>1</mn></msub><mo>+</mo><msub><mi>𝐤</mi><mn>2</mn></msub><mo>=</mo><msub><mi>𝐤</mi><mn>3</mn></msub><mo>+</mo><msub><mi>𝐤</mi><mn>4</mn></msub></mrow><mo>,</mo><mspace width="1.2em"></mspace><mrow class="hl" data-k="ws"><msub><mi>ω</mi><mn>1</mn></msub><mo>+</mo><msub><mi>ω</mi><mn>2</mn></msub><mo>=</mo><msub><mi>ω</mi><mn>3</mn></msub><mo>+</mo><msub><mi>ω</mi><mn>4</mn></msub></mrow></math></div><span class="tag">(1)</span></div>
-      <p>Two pairs of waves (<span class="v">k</span><sub>1</sub>, <span class="v">k</span><sub>2</sub>) and (<span class="v">k</span><sub>3</sub>, <span class="v">k</span><sub>4</sub>) exchange action when both pairs have the same vector sum and the same frequency sum, with <span class="m">ω</span><sup>2</sup> = <span class="m">gk</span> in deep water. For fixed <span class="v">k</span><sub>1</sub> and <span class="v">k</span><sub>3</sub> the wavenumbers <span class="v">k</span><sub>2</sub> that meet both conditions form a closed curve called the <span class="v">k</span><sub>2</sub> locus, and the matching <span class="v">k</span><sub>4</sub> = <span class="v">k</span><sub>1</sub> + <span class="v">k</span><sub>2</sub> − <span class="v">k</span><sub>3</sub> trace the dashed <span class="v">k</span><sub>4</sub> locus.</p>
-      <p>In the animation <span class="v">k</span><sub>2</sub> runs once around its locus while the inset places the four vectors head to tail and the bars compare the two frequency sums. When <span class="v">k</span><sub>2</sub> leaves the locus the vector sum still closes but the frequency sums no longer match.</p>
-    </div>
-  </div>
+<figure class="anim" id="step-f1">
+  <div class="eq"><div class="eqm"><math display="block"><mrow class="hl" data-k="ks"><msub><mi>𝐤</mi><mn>1</mn></msub><mo>+</mo><msub><mi>𝐤</mi><mn>2</mn></msub><mo>=</mo><msub><mi>𝐤</mi><mn>3</mn></msub><mo>+</mo><msub><mi>𝐤</mi><mn>4</mn></msub></mrow><mo>,</mo><mspace width="1.2em"></mspace><mrow class="hl" data-k="ws"><msub><mi>ω</mi><mn>1</mn></msub><mo>+</mo><msub><mi>ω</mi><mn>2</mn></msub><mo>=</mo><msub><mi>ω</mi><mn>3</mn></msub><mo>+</mo><msub><mi>ω</mi><mn>4</mn></msub></mrow></math></div><span class="eqn">(1)</span></div>
+  <div class="plot" id="f1"></div>
+  <figcaption><b>Animation S1.</b> Resonance conditions of Eq. (1) for <span class="v">k</span><sub>3</sub> two frequency bins above <span class="v">k</span><sub>1</sub> at 30°. The wavenumber <span class="v">k</span><sub>2</sub> runs once along its locus while the inset places the four vectors head to tail and the bars compare <span class="m">ω</span><sub>1</sub> + <span class="m">ω</span><sub>2</sub> with <span class="m">ω</span><sub>3</sub> + <span class="m">ω</span><sub>4</sub>. In the last part <span class="v">k</span><sub>2</sub> leaves the locus and the two frequency sums no longer match.</figcaption>
+</figure>
 
-  <div class="step" id="step-f2">
-    <div class="fig" id="f2"></div>
-    <div class="txt">
-      <div class="num">Step 2</div>
-      <h3>The delta functions leave one locus per pair</h3>
-      <div class="eqb"><div class="stack"><math display="block"><mfrac><mrow><mo>∂</mo><msub><mi>n</mi><mn>1</mn></msub></mrow><mrow><mo>∂</mo><mi>t</mi></mrow></mfrac><mo>=</mo><mo>∭</mo><mi>G</mi><mspace width="0.17em"></mspace><mrow class="hl" data-k="dk"><mi>δ</mi><mo stretchy="false">(</mo><msub><mi>𝐤</mi><mn>1</mn></msub><mo>+</mo><msub><mi>𝐤</mi><mn>2</mn></msub><mo>−</mo><msub><mi>𝐤</mi><mn>3</mn></msub><mo>−</mo><msub><mi>𝐤</mi><mn>4</mn></msub><mo stretchy="false">)</mo></mrow><mspace width="0.17em"></mspace><mrow class="hl" data-k="dw"><mi>δ</mi><mo stretchy="false">(</mo><msub><mi>ω</mi><mn>1</mn></msub><mo>+</mo><msub><mi>ω</mi><mn>2</mn></msub><mo>−</mo><msub><mi>ω</mi><mn>3</mn></msub><mo>−</mo><msub><mi>ω</mi><mn>4</mn></msub><mo stretchy="false">)</mo></mrow><mspace width="0.17em"></mspace><msub><mi>N</mi><mn>1234</mn></msub><mspace width="0.17em"></mspace><mi>d</mi><msub><mi>𝐤</mi><mn>2</mn></msub><mspace width="0.17em"></mspace><mrow class="hl" data-k="k3"><mi>d</mi><msub><mi>𝐤</mi><mn>3</mn></msub></mrow><mspace width="0.17em"></mspace><mi>d</mi><msub><mi>𝐤</mi><mn>4</mn></msub></math></div><span class="tag">(2)</span></div>
-      <div class="eqb"><div class="stack"><math display="block"><msub><mi>N</mi><mn>1234</mn></msub><mo>=</mo><msub><mi>n</mi><mn>1</mn></msub><msub><mi>n</mi><mn>3</mn></msub><mo stretchy="false">(</mo><msub><mi>n</mi><mn>4</mn></msub><mo>−</mo><msub><mi>n</mi><mn>2</mn></msub><mo stretchy="false">)</mo><mo>+</mo><msub><mi>n</mi><mn>2</mn></msub><msub><mi>n</mi><mn>4</mn></msub><mo stretchy="false">(</mo><msub><mi>n</mi><mn>3</mn></msub><mo>−</mo><msub><mi>n</mi><mn>1</mn></msub><mo stretchy="false">)</mo></math></div><span class="tag">(3)</span></div>
-      <div class="eqb"><div class="stack"><math display="block"><mfrac><mrow><mo>∂</mo><msub><mi>n</mi><mn>1</mn></msub></mrow><mrow><mo>∂</mo><mi>t</mi></mrow></mfrac><mo>=</mo><mo>∫</mo><mrow class="hl" data-k="k3"><mi>T</mi><mo stretchy="false">(</mo><msub><mi>𝐤</mi><mn>1</mn></msub><mo>,</mo><msub><mi>𝐤</mi><mn>3</mn></msub><mo stretchy="false">)</mo><mspace width="0.17em"></mspace><mi>d</mi><msub><mi>𝐤</mi><mn>3</mn></msub></mrow></math></div><span class="tag">Webb</span></div>
-      <p>The first delta function fixes <span class="v">k</span><sub>4</sub> = <span class="v">k</span><sub>1</sub> + <span class="v">k</span><sub>2</sub> − <span class="v">k</span><sub>3</sub>, and the second confines <span class="v">k</span><sub>2</sub> to the locus of each pair (<span class="v">k</span><sub>1</sub>, <span class="v">k</span><sub>3</sub>). The remaining integral over <span class="v">k</span><sub>3</sub> is written as an integral of <span class="m">T</span>(<span class="v">k</span><sub>1</sub>, <span class="v">k</span><sub>3</sub>) following Webb (1978), and the product term <span class="m">N</span><sub>1234</sub> of Eq. (3) is evaluated along each locus from the action densities of the four waves.</p>
-      <p>Xnl evaluates only the pairs inside the pair window with <span class="m">k</span><sub>3</sub>/<span class="m">k</span><sub>1</sub> ≤ 2.5 and |<span class="m">θ</span><sub>3</sub> − <span class="m">θ</span><sub>1</sub>| ≤ 75°, which are the 54 offsets with 0 ≤ Δ<span class="m">i</span> ≤ 4 and |Δ<span class="m">j</span>| ≤ 5 other than (0, 0). The animation steps <span class="v">k</span><sub>3</sub> through these offsets and leaves the loci of the visited pairs in gray.</p>
-    </div>
-  </div>
+<figure class="anim" id="step-f2">
+  <div class="eq"><div class="eqm"><math display="block"><mfrac><mrow><mo>∂</mo><msub><mi>n</mi><mn>1</mn></msub></mrow><mrow><mo>∂</mo><mi>t</mi></mrow></mfrac><mo>=</mo><mo>∭</mo><mi>G</mi><mspace width="0.17em"></mspace><mrow class="hl" data-k="dk"><mi>δ</mi><mo stretchy="false">(</mo><msub><mi>𝐤</mi><mn>1</mn></msub><mo>+</mo><msub><mi>𝐤</mi><mn>2</mn></msub><mo>−</mo><msub><mi>𝐤</mi><mn>3</mn></msub><mo>−</mo><msub><mi>𝐤</mi><mn>4</mn></msub><mo stretchy="false">)</mo></mrow><mspace width="0.17em"></mspace><mrow class="hl" data-k="dw"><mi>δ</mi><mo stretchy="false">(</mo><msub><mi>ω</mi><mn>1</mn></msub><mo>+</mo><msub><mi>ω</mi><mn>2</mn></msub><mo>−</mo><msub><mi>ω</mi><mn>3</mn></msub><mo>−</mo><msub><mi>ω</mi><mn>4</mn></msub><mo stretchy="false">)</mo></mrow><mspace width="0.17em"></mspace><msub><mi>N</mi><mn>1234</mn></msub><mspace width="0.17em"></mspace><mi>d</mi><msub><mi>𝐤</mi><mn>2</mn></msub><mspace width="0.17em"></mspace><mrow class="hl" data-k="k3"><mi>d</mi><msub><mi>𝐤</mi><mn>3</mn></msub></mrow><mspace width="0.17em"></mspace><mi>d</mi><msub><mi>𝐤</mi><mn>4</mn></msub></math></div><span class="eqn">(2)</span></div>
+  <div class="eq"><div class="eqm"><math display="block"><msub><mi>N</mi><mn>1234</mn></msub><mo>=</mo><msub><mi>n</mi><mn>1</mn></msub><msub><mi>n</mi><mn>3</mn></msub><mo stretchy="false">(</mo><msub><mi>n</mi><mn>4</mn></msub><mo>−</mo><msub><mi>n</mi><mn>2</mn></msub><mo stretchy="false">)</mo><mo>+</mo><msub><mi>n</mi><mn>2</mn></msub><msub><mi>n</mi><mn>4</mn></msub><mo stretchy="false">(</mo><msub><mi>n</mi><mn>3</mn></msub><mo>−</mo><msub><mi>n</mi><mn>1</mn></msub><mo stretchy="false">)</mo></math></div><span class="eqn">(3)</span></div>
+  <div class="plot" id="f2"></div>
+  <figcaption><b>Animation S2.</b> The delta functions of Eq. (2) fix <span class="v">k</span><sub>4</sub> = <span class="v">k</span><sub>1</sub> + <span class="v">k</span><sub>2</sub> − <span class="v">k</span><sub>3</sub> and confine <span class="v">k</span><sub>2</sub> to the locus of the pair (<span class="v">k</span><sub>1</sub>, <span class="v">k</span><sub>3</sub>). The remaining integral over <span class="v">k</span><sub>3</sub> runs over the 54 offsets of the pair window of Xnl, and the loci of the visited pairs stay in gray.</figcaption>
+</figure>
 
-  <div class="step" id="step-f3">
-    <div class="fig" id="f3"></div>
-    <div class="txt">
-      <div class="num">Step 3</div>
-      <h3>A line integral with a Jacobian and a step function</h3>
-      <div class="eqb"><div class="stack"><math display="block"><mi>T</mi><mo stretchy="false">(</mo><msub><mi>𝐤</mi><mn>1</mn></msub><mo>,</mo><msub><mi>𝐤</mi><mn>3</mn></msub><mo stretchy="false">)</mo><mo>=</mo><mrow class="hl" data-k="two"><mn>2</mn></mrow><mo>∮</mo><mi>G</mi><mspace width="0.17em"></mspace><mrow class="hl" data-k="J"><mi>J</mi></mrow><mspace width="0.17em"></mspace><mrow class="hl" data-k="H"><mi>H</mi></mrow><mspace width="0.17em"></mspace><msub><mi>N</mi><mn>1234</mn></msub><mspace width="0.17em"></mspace><mrow class="hl" data-k="ds"><mi>d</mi><mi>s</mi></mrow><mo>,</mo><mspace width="1.2em"></mspace><mrow class="hl" data-k="J"><mi>J</mi><mo>=</mo><msup><mrow><mo>|</mo><msub><mi>𝐜</mi><mrow><mi>g</mi><mo>,</mo><mn>2</mn></mrow></msub><mo>−</mo><msub><mi>𝐜</mi><mrow><mi>g</mi><mo>,</mo><mn>4</mn></mrow></msub><mo>|</mo></mrow><mrow><mo>−</mo><mn>1</mn></mrow></msup></mrow></math></div><span class="tag">(4)</span></div>
-      <p>Integration over the delta functions leaves a line integral along the <span class="v">k</span><sub>2</sub> locus with arc length <span class="m">s</span>. The gradient of the frequency mismatch Δ<span class="m">ω</span> = <span class="m">ω</span><sub>1</sub> + <span class="m">ω</span><sub>2</sub> − <span class="m">ω</span><sub>3</sub> − <span class="m">ω</span><sub>4</sub> with respect to <span class="v">k</span><sub>2</sub> is <span class="v">c</span><sub><span class="m">g</span>,2</sub> − <span class="v">c</span><sub><span class="m">g</span>,4</sub>, drawn as the gray arrow at the moving point, and the Jacobian <span class="m">J</span> is the inverse of its length. The gray band of small |Δ<span class="m">ω</span>| is wider where <span class="m">J</span> is larger.</p>
-      <p>The two thin lines from the tip of <span class="v">k</span><sub>1</sub> compare |<span class="v">k</span><sub>1</sub> − <span class="v">k</span><sub>4</sub>| with |<span class="v">k</span><sub>1</sub> − <span class="v">k</span><sub>3</sub>|, and the step function <span class="m">H</span> = 1 keeps the point where the first is longer. Each quadruplet contributes twice to the integral over <span class="v">k</span><sub>3</sub> with the same value, in <span class="m">T</span>(<span class="v">k</span><sub>1</sub>, <span class="v">k</span><sub>3</sub>) and in <span class="m">T</span>(<span class="v">k</span><sub>1</sub>, <span class="v">k</span><sub>4</sub>) with <span class="v">k</span><sub>3</sub> and <span class="v">k</span><sub>4</sub> exchanged. The step function keeps the term with <span class="v">k</span><sub>3</sub> closer to <span class="v">k</span><sub>1</sub> and the factor 2 adds the equal contribution of the other.</p>
-    </div>
-  </div>
-</section>
+<figure class="anim" id="step-f3">
+  <div class="eq"><div class="eqm"><math display="block"><mi>T</mi><mo stretchy="false">(</mo><msub><mi>𝐤</mi><mn>1</mn></msub><mo>,</mo><msub><mi>𝐤</mi><mn>3</mn></msub><mo stretchy="false">)</mo><mo>=</mo><mrow class="hl" data-k="two"><mn>2</mn></mrow><mo>∮</mo><mi>G</mi><mspace width="0.17em"></mspace><mrow class="hl" data-k="J"><mi>J</mi></mrow><mspace width="0.17em"></mspace><mrow class="hl" data-k="H"><mi>H</mi></mrow><mspace width="0.17em"></mspace><msub><mi>N</mi><mn>1234</mn></msub><mspace width="0.17em"></mspace><mrow class="hl" data-k="ds"><mi>d</mi><mi>s</mi></mrow><mo>,</mo><mspace width="1.2em"></mspace><mrow class="hl" data-k="J"><mi>J</mi><mo>=</mo><msup><mrow><mo>|</mo><msub><mi>𝐜</mi><mrow><mi>g</mi><mo>,</mo><mn>2</mn></mrow></msub><mo>−</mo><msub><mi>𝐜</mi><mrow><mi>g</mi><mo>,</mo><mn>4</mn></mrow></msub><mo>|</mo></mrow><mrow><mo>−</mo><mn>1</mn></mrow></msup></mrow></math></div><span class="eqn">(4)</span></div>
+  <div class="plot" id="f3"></div>
+  <figcaption><b>Animation S3.</b> Line integral of Eq. (4) along the <span class="v">k</span><sub>2</sub> locus. The gray arrow is the gradient <span class="v">c</span><sub><span class="m">g</span>,2</sub> − <span class="v">c</span><sub><span class="m">g</span>,4</sub> of the frequency mismatch with respect to <span class="v">k</span><sub>2</sub>, and <span class="m">J</span> is the inverse of its length. The thin lines from the tip of <span class="v">k</span><sub>1</sub> compare |<span class="v">k</span><sub>1</sub> − <span class="v">k</span><sub>4</sub>| with |<span class="v">k</span><sub>1</sub> − <span class="v">k</span><sub>3</sub>|, and <span class="m">H</span> = 0 on the light arc where the quadruplet counts in <span class="m">T</span>(<span class="v">k</span><sub>1</sub>, <span class="v">k</span><sub>4</sub>) instead.</figcaption>
+</figure>
 
-<section class="part">
-  <div class="part-head"><h2>2b. Discretization</h2><span class="eqs">Eqs. (5)–(6), the WRT code Xnl used by WAVEWATCH III</span></div>
+<h2>2b. Discretization</h2>
 
-  <div class="step" id="step-f4">
-    <div class="fig" id="f4"></div>
-    <div class="txt">
-      <div class="num">Step 4</div>
-      <h3>The spectral grid</h3>
-      <div class="eqb"><div class="stack"><math display="block"><msub><mi>f</mi><mi>i</mi></msub><mo>=</mo><msub><mi>f</mi><mi>min</mi></msub><mspace width="0.17em"></mspace><msup><mn>1.1</mn><mrow><mi>i</mi><mo>−</mo><mn>1</mn></mrow></msup><mo>,</mo><mspace width="0.6em"></mspace><mi>i</mi><mo>=</mo><mn>1</mn><mo>,</mo><mo>…</mo><mo>,</mo><mn>40</mn><mo>,</mo><mspace width="1.2em"></mspace><mi mathvariant="normal">Δ</mi><mi>θ</mi><mo>=</mo><mn>15°</mn></math></div></div>
-      <p>The grid has 40 frequencies from <span class="m">f</span><sub>min</sub> = 0.03453 Hz up to 1.42 Hz and 24 directions 15° apart. In deep water the wavenumbers <span class="m">k<sub>i</sub></span> are then geometrically spaced with ratio 1.1<sup>2</sup> = 1.21, and the ladder marks bin 20 at 0.21 Hz where <span class="v">k</span><sub>1</sub> sits in the figures of this page.</p>
-    </div>
-  </div>
+<figure class="anim" id="step-f5">
+  <div class="eq"><div class="eqm"><math display="block"><mi>T</mi><mo stretchy="false">(</mo><msub><mi>𝐤</mi><mn>1</mn></msub><mo>,</mo><msub><mi>𝐤</mi><mn>3</mn></msub><mo stretchy="false">)</mo><mo>≈</mo><mn>2</mn><mrow class="hl" data-k="sum"><munder><mo>∑</mo><mi>m</mi></munder></mrow><mrow class="hl" data-k="w"><msub><mi>w</mi><mi>m</mi></msub></mrow><mspace width="0.17em"></mspace><mrow class="hl" data-k="Nm"><msub><mi>N</mi><mn>1234</mn></msub><mo stretchy="false">(</mo><mi>m</mi><mo stretchy="false">)</mo></mrow><mo>,</mo><mspace width="1.2em"></mspace><mrow class="hl" data-k="w"><msub><mi>w</mi><mi>m</mi></msub><mo>=</mo><msub><mi>G</mi><mi>m</mi></msub><msub><mi>J</mi><mi>m</mi></msub></mrow><mspace width="0.17em"></mspace><mrow class="hl" data-k="w ds"><mi mathvariant="normal">Δ</mi><msub><mi>s</mi><mi>m</mi></msub></mrow></math></div><span class="eqn">(5)</span></div>
+  <div class="plot" id="f5"></div>
+  <figcaption><b>Animation S4.</b> Discretization of Eq. (5). Points equidistant in <span class="m">s</span> are placed along the locus and the points with <span class="m">H</span> = 0 are removed. At each kept point <span class="m">n</span><sub>2</sub> and <span class="m">n</span><sub>4</sub> are interpolated from the four surrounding grid points, and the bars give <span class="m">n</span><sub>1</sub> to <span class="m">n</span><sub>4</sub> and <span class="m">N</span><sub>1234</sub>(<span class="m">m</span>) for a JONSWAP spectrum with its peak at 0.2 Hz.</figcaption>
+</figure>
 
-  <div class="step" id="step-f5">
-    <div class="fig" id="f5"></div>
-    <div class="txt">
-      <div class="num">Step 5</div>
-      <h3>Points on the locus and their weights</h3>
-      <div class="eqb"><div class="stack"><math display="block"><mi>T</mi><mo stretchy="false">(</mo><msub><mi>𝐤</mi><mn>1</mn></msub><mo>,</mo><msub><mi>𝐤</mi><mn>3</mn></msub><mo stretchy="false">)</mo><mo>≈</mo><mn>2</mn><mrow class="hl" data-k="sum"><munder><mo>∑</mo><mi>m</mi></munder></mrow><mrow class="hl" data-k="w"><msub><mi>w</mi><mi>m</mi></msub></mrow><mspace width="0.17em"></mspace><mrow class="hl" data-k="Nm"><msub><mi>N</mi><mn>1234</mn></msub><mo stretchy="false">(</mo><mi>m</mi><mo stretchy="false">)</mo></mrow><mo>,</mo><mspace width="1.2em"></mspace><mrow class="hl" data-k="w"><msub><mi>w</mi><mi>m</mi></msub><mo>=</mo><msub><mi>G</mi><mi>m</mi></msub><msub><mi>J</mi><mi>m</mi></msub></mrow><mspace width="0.17em"></mspace><mrow class="hl" data-k="w ds"><mi mathvariant="normal">Δ</mi><msub><mi>s</mi><mi>m</mi></msub></mrow></math></div><span class="tag">(5)</span></div>
-      <p>Xnl places points equidistant in <span class="m">s</span> on each locus, and the sum runs over the points with <span class="m">H</span> = 1. Each point is one quadruplet with one weight <span class="m">w<sub>m</sub></span> that combines the coupling coefficient, the Jacobian and the step length.</p>
-      <p>At each point the thin lines connect <span class="v">k</span><sub>2</sub> and <span class="v">k</span><sub>4</sub> to the four surrounding grid points that give <span class="m">n</span><sub>2</sub> and <span class="m">n</span><sub>4</sub> by bilinear interpolation, and <span class="m">N</span><sub>1234</sub>(<span class="m">m</span>) follows from Eq. (3). The bars below the figure give the four action densities and <span class="m">N</span><sub>1234</sub>(<span class="m">m</span>) for a JONSWAP spectrum with its peak at 0.2 Hz.</p>
-      <p>Locus points with <span class="v">k</span><sub>2</sub> or <span class="v">k</span><sub>4</sub> above the highest grid wavenumber take <span class="m">n</span><sub>2</sub> and <span class="m">n</span><sub>4</sub> from the highest bin, and their weight includes a tail factor that corresponds to a spectral tail <span class="m">E</span>(<span class="m">f</span>) ∝ <span class="m">f</span><sup>−5</sup>.</p>
-    </div>
-  </div>
+<figure class="anim" id="step-f6">
+  <div class="eq"><div class="eqm"><math display="block"><mrow class="hl" data-k="p"><mover accent="true"><mi>n</mi><mo>˙</mo></mover><mo stretchy="false">(</mo><msub><mi>i</mi><mn>1</mn></msub><mo>,</mo><msub><mi>j</mi><mn>1</mn></msub><mo stretchy="false">)</mo><mo>+=</mo><mi>T</mi><mspace width="0.17em"></mspace><msub><mi>k</mi><mn>3</mn></msub><mi mathvariant="normal">Δ</mi><msub><mi>k</mi><mn>3</mn></msub><mi mathvariant="normal">Δ</mi><mi>θ</mi></mrow><mo>,</mo><mspace width="1.2em"></mspace><mrow class="hl" data-k="m"><mover accent="true"><mi>n</mi><mo>˙</mo></mover><mo stretchy="false">(</mo><msub><mi>i</mi><mn>3</mn></msub><mo>,</mo><msub><mi>j</mi><mn>3</mn></msub><mo stretchy="false">)</mo><mo>−=</mo><mi>T</mi><mspace width="0.17em"></mspace><msub><mi>k</mi><mn>1</mn></msub><mi mathvariant="normal">Δ</mi><msub><mi>k</mi><mn>1</mn></msub><mi mathvariant="normal">Δ</mi><mi>θ</mi></mrow></math></div><span class="eqn">(6)</span></div>
+  <div class="plot" id="f6"></div>
+  <figcaption><b>Animation S5.</b> Deposit of Eq. (6) for a pair with <span class="m">i</span><sub>3</sub> &gt; <span class="m">i</span><sub>1</sub>. The bin of <span class="v">k</span><sub>1</sub> gains <span class="m">T k</span><sub>3</sub>Δ<span class="m">k</span><sub>3</sub>Δ<span class="m">θ</span> and the bin of <span class="v">k</span><sub>3</sub> loses <span class="m">T k</span><sub>1</sub>Δ<span class="m">k</span><sub>1</sub>Δ<span class="m">θ</span>. The two changes of density differ by the ratio of the bin areas, whereas the two changes of action cancel.</figcaption>
+</figure>
 
-  <div class="step" id="step-f6">
-    <div class="fig" id="f6"></div>
-    <div class="txt">
-      <div class="num">Step 6</div>
-      <h3>One evaluation, two bins</h3>
-      <div class="eqb"><div class="stack"><math display="block"><mrow class="hl" data-k="p"><mover accent="true"><mi>n</mi><mo>˙</mo></mover><mo stretchy="false">(</mo><msub><mi>i</mi><mn>1</mn></msub><mo>,</mo><msub><mi>j</mi><mn>1</mn></msub><mo stretchy="false">)</mo><mo>+=</mo><mi>T</mi><mspace width="0.17em"></mspace><msub><mi>k</mi><mn>3</mn></msub><mi mathvariant="normal">Δ</mi><msub><mi>k</mi><mn>3</mn></msub><mi mathvariant="normal">Δ</mi><mi>θ</mi></mrow><mo>,</mo><mspace width="1.2em"></mspace><mrow class="hl" data-k="m"><mover accent="true"><mi>n</mi><mo>˙</mo></mover><mo stretchy="false">(</mo><msub><mi>i</mi><mn>3</mn></msub><mo>,</mo><msub><mi>j</mi><mn>3</mn></msub><mo stretchy="false">)</mo><mo>−=</mo><mi>T</mi><mspace width="0.17em"></mspace><msub><mi>k</mi><mn>1</mn></msub><mi mathvariant="normal">Δ</mi><msub><mi>k</mi><mn>1</mn></msub><mi mathvariant="normal">Δ</mi><mi>θ</mi></mrow></math></div><span class="tag">(6)</span></div>
-      <p>The antisymmetry <span class="m">T</span>(<span class="v">k</span><sub>1</sub>, <span class="v">k</span><sub>3</sub>) = −<span class="m">T</span>(<span class="v">k</span><sub>3</sub>, <span class="v">k</span><sub>1</sub>) lets a pair with <span class="m">i</span><sub>3</sub> &gt; <span class="m">i</span><sub>1</sub> be evaluated once and deposited in two bins. The bin of <span class="v">k</span><sub>1</sub> gains <span class="m">T</span> times the area <span class="m">A</span><sub>3</sub> = <span class="m">k</span><sub>3</sub>Δ<span class="m">k</span><sub>3</sub>Δ<span class="m">θ</span> of the bin of <span class="v">k</span><sub>3</sub>, and the bin of <span class="v">k</span><sub>3</sub> loses <span class="m">T</span> times the area <span class="m">A</span><sub>1</sub> of the bin of <span class="v">k</span><sub>1</sub>.</p>
-      <p>Each change of density times the area of its own bin is the same amount of action, and the two amounts cancel in the total. Pairs on the same frequency are evaluated once with each of their two wavenumbers as <span class="v">k</span><sub>1</sub> and with half the step length on their straight loci. The rate of change <span class="m">ṅ</span> finally becomes the source term <span class="m">S</span><sub>nl</sub>(<span class="m">f</span>, <span class="m">θ</span>) through <span class="m">E</span> = 2π<span class="m">ωk n</span>/<span class="m">c<sub>g</sub></span>.</p>
-    </div>
-  </div>
-</section>
+<h2>2c. Table of configurations</h2>
 
-<section class="part">
-  <div class="part-head"><h2>2c. Table of configurations</h2><span class="eqs">rows, configurations and the stencil</span></div>
+<figure class="anim" id="step-f7">
+  <div class="eq"><div class="eqm"><math display="block"><mrow class="hl" data-k="sc"><mi>𝐤</mi><mo>→</mo><msup><mn>1.1</mn><mn>2</mn></msup><mi>𝐤</mi><mo>,</mo><mspace width="0.6em"></mspace><mi>θ</mi><mo>→</mo><mi>θ</mi><mo>+</mo><mn>15°</mn></mrow><mspace width="1.4em"></mspace><mrow class="hl" data-k="mr"><mi mathvariant="normal">Δ</mi><mi>j</mi><mo>→</mo><mo>−</mo><mi mathvariant="normal">Δ</mi><mi>j</mi></mrow></math></div><span class="eqn"></span></div>
+  <div class="plot" id="f7"></div>
+  <figcaption><b>Animation S6.</b> Self-similarity of the loci (Tracy and Resio 1982). Moving <span class="v">k</span><sub>1</sub> and <span class="v">k</span><sub>3</sub> one frequency bin up and one direction bin around scales and turns the whole figure with the grid, and the lower panel shows that the positions of the row of configuration 316 in bins from <span class="v">k</span><sub>1</sub> stay the same. The last part reflects the directions about <span class="v">k</span><sub>1</sub> and forms the mirror image of the row.</figcaption>
+</figure>
 
-  <div class="step" id="step-f7">
-    <div class="fig" id="f7"></div>
-    <div class="txt">
-      <div class="num">Step 7</div>
-      <h3>The same positions at every frequency</h3>
-      <div class="eqb"><div class="stack"><math display="block"><mrow class="hl" data-k="sc"><mi>𝐤</mi><mo>→</mo><msup><mn>1.1</mn><mn>2</mn></msup><mi>𝐤</mi><mo>,</mo><mspace width="0.6em"></mspace><mi>θ</mi><mo>→</mo><mi>θ</mi><mo>+</mo><mn>15°</mn></mrow><mspace width="1.4em"></mspace><mrow class="hl" data-k="mr"><mi mathvariant="normal">Δ</mi><mi>j</mi><mo>→</mo><mo>−</mo><mi mathvariant="normal">Δ</mi><mi>j</mi></mrow></math></div></div>
-      <p>In deep water multiplying <span class="v">k</span><sub>1</sub> and <span class="v">k</span><sub>3</sub> by a common factor scales their loci by the same factor (Tracy and Resio 1982). One frequency bin up multiplies every wavenumber of the figure and the spacing of the grid circles by 1.1<sup>2</sup>, and one direction bin turns the whole figure by 15°.</p>
-      <p>Counted in bins from <span class="v">k</span><sub>1</sub> the quadruplet keeps its positions, and only its weight <span class="m">w<sub>r</sub></span>(<span class="m">i</span><sub>1</sub>) changes with the frequency bin <span class="m">i</span><sub>1</sub> of <span class="v">k</span><sub>1</sub>. This row of configuration 316 has <span class="v">k</span><sub>3</sub> at the offset (2, 2) and <span class="v">k</span><sub>2</sub> and <span class="v">k</span><sub>4</sub> at (4.0, 7.0) and (2.4, 8.1) bins from <span class="v">k</span><sub>1</sub>.</p>
-      <p>Reflecting the directions about <span class="v">k</span><sub>1</sub> gives the mirror image of a row, and a row and its mirror image form one configuration.</p>
-    </div>
-  </div>
+<figure class="anim" id="step-f9">
+  <div class="eq"><div class="eqm"><math display="block"><mrow class="hl" data-k="n24"><msub><mi>n</mi><mn>2</mn></msub><mo>=</mo><mi>n</mi><mo stretchy="false">(</mo><msub><mi>i</mi><mn>1</mn></msub><mo>+</mo><mi mathvariant="normal">Δ</mi><msub><mi>i</mi><mn>2</mn></msub><mo>,</mo><msub><mi>j</mi><mn>1</mn></msub><mo>+</mo><mi mathvariant="normal">Δ</mi><msub><mi>j</mi><mn>2</mn></msub><mo stretchy="false">)</mo><mo>,</mo><mspace width="0.8em"></mspace><msub><mi>n</mi><mn>4</mn></msub><mo>=</mo><mi>n</mi><mo stretchy="false">(</mo><msub><mi>i</mi><mn>1</mn></msub><mo>+</mo><mi mathvariant="normal">Δ</mi><msub><mi>i</mi><mn>4</mn></msub><mo>,</mo><msub><mi>j</mi><mn>1</mn></msub><mo>+</mo><mi mathvariant="normal">Δ</mi><msub><mi>j</mi><mn>4</mn></msub><mo stretchy="false">)</mo></mrow></math></div><span class="eqn"></span></div>
+  <div class="plot" id="f9"></div>
+  <figcaption><b>Animation S7.</b> The row of configuration 316 used as a stencil. At each anchor bin the row reads <span class="m">n</span><sub>1</sub> and <span class="m">n</span><sub>3</sub> in the bins of <span class="v">k</span><sub>1</sub> and <span class="v">k</span><sub>3</sub> and interpolates <span class="m">n</span><sub>2</sub> and <span class="m">n</span><sub>4</sub> in the dashed boxes. The colors add up its deposits with a unit weight for the JONSWAP spectrum of Fig. 4 of the paper.</figcaption>
+</figure>
 
-  <div class="step" id="step-f8">
-    <div class="fig">
-      <div class="flow" aria-label="From stored points to configurations">
-        <div class="box"><b>59,987</b><span>locus points stored by Xnl for this grid</span></div>
-        <div class="down">↓ inside the pair window</div>
-        <div class="box"><b>22,914</b><span>points used by WRT</span></div>
-        <div class="down">↓ the same rows repeat at every frequency bin</div>
-        <div class="box"><b>1,184</b><span>rows on 54 offsets</span></div>
-        <div class="down">↓ a row and its mirror image (Δ<span class="m">j</span> → −Δ<span class="m">j</span>)</div>
-        <div class="box"><b>592</b><span>configurations in the table of WRT</span></div>
-        <div class="down">↓ section 3</div>
-        <div class="box next"><b>36</b><span>configurations retained by SWRT, each with a coefficient</span></div>
-      </div>
-    </div>
-    <div class="txt">
-      <div class="num">Step 8</div>
-      <h3>From points to configurations</h3>
-      <p>Each stored point inside the pair window gives one row, and the rows repeat at every frequency bin. The 22,914 points reduce to 1,184 rows on 54 offsets, and with their mirror images these rows form the 592 configurations of the table that Fig. 2h of the paper draws.</p>
-    </div>
-  </div>
+<h2>3a. From the table to SWRT</h2>
 
-  <div class="step" id="step-f9">
-    <div class="fig" id="f9"></div>
-    <div class="txt">
-      <div class="num">Step 9</div>
-      <h3>A row is a stencil</h3>
-      <div class="eqb"><div class="stack"><math display="block"><mrow class="hl" data-k="n24"><msub><mi>n</mi><mn>2</mn></msub><mo>=</mo><mi>n</mi><mo stretchy="false">(</mo><msub><mi>i</mi><mn>1</mn></msub><mo>+</mo><mi mathvariant="normal">Δ</mi><msub><mi>i</mi><mn>2</mn></msub><mo>,</mo><msub><mi>j</mi><mn>1</mn></msub><mo>+</mo><mi mathvariant="normal">Δ</mi><msub><mi>j</mi><mn>2</mn></msub><mo stretchy="false">)</mo><mo>,</mo><mspace width="0.8em"></mspace><msub><mi>n</mi><mn>4</mn></msub><mo>=</mo><mi>n</mi><mo stretchy="false">(</mo><msub><mi>i</mi><mn>1</mn></msub><mo>+</mo><mi mathvariant="normal">Δ</mi><msub><mi>i</mi><mn>4</mn></msub><mo>,</mo><msub><mi>j</mi><mn>1</mn></msub><mo>+</mo><mi mathvariant="normal">Δ</mi><msub><mi>j</mi><mn>4</mn></msub><mo stretchy="false">)</mo></mrow></math></div></div>
-      <p>At each placement the row puts <span class="v">k</span><sub>1</sub> in the anchor bin (<span class="m">i</span><sub>1</sub>, <span class="m">j</span><sub>1</sub>) and <span class="v">k</span><sub>3</sub> in the bin (<span class="m">i</span><sub>1</sub> + Δ<span class="m">i</span>, <span class="m">j</span><sub>1</sub> + Δ<span class="m">j</span>), where <span class="m">n</span><sub>1</sub> and <span class="m">n</span><sub>3</sub> are read. The densities <span class="m">n</span><sub>2</sub> and <span class="m">n</span><sub>4</sub> are interpolated in the dashed boxes, and the term 2<span class="m">w<sub>r</sub></span>(<span class="m">i</span><sub>1</sub>)<span class="m">N</span><sub>1234</sub> goes into the anchor bin and the bin of <span class="v">k</span><sub>3</sub> by Eq. (6).</p>
-      <p>The stencil visits every bin of the grid as the anchor bin, and the colors add up the deposits of this one row with a unit weight for the JONSWAP spectrum of Fig. 4 of the paper. Summed over all anchor bins and all rows, the table reproduces WRT.</p>
-    </div>
-  </div>
-</section>
+<figure class="anim" id="step-f10">
+  <div class="eq"><div class="eqm"><math display="block"><msub><mi mathvariant="normal">Φ</mi><mi>q</mi></msub><mo stretchy="false">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo stretchy="false">)</mo><mo>=</mo><mrow class="hl" data-k="C"><msub><mi>C</mi><mi>i</mi></msub></mrow><mrow class="hl" data-k="sum"><munder><mo>∑</mo><mrow><mi>r</mi><mo>∈</mo><mi>q</mi></mrow></munder></mrow><mrow><mo>[</mo><mrow class="hl" data-k="t1"><mn>2</mn><msub><mi>w</mi><mi>r</mi></msub><mo stretchy="false">(</mo><mi>i</mi><mo stretchy="false">)</mo><msub><mi>N</mi><mi>r</mi></msub><mo stretchy="false">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo stretchy="false">)</mo><msub><mi>A</mi><mrow><mi>i</mi><mo>+</mo><mi mathvariant="normal">Δ</mi><mi>i</mi></mrow></msub></mrow><mo>−</mo><mrow class="hl" data-k="t2"><mn>2</mn><msub><mi>w</mi><mi>r</mi></msub><mo stretchy="false">(</mo><mi>i</mi><mo>−</mo><mi mathvariant="normal">Δ</mi><mi>i</mi><mo stretchy="false">)</mo><msub><mi>N</mi><mi>r</mi></msub><mo stretchy="false">(</mo><mi>i</mi><mo>−</mo><mi mathvariant="normal">Δ</mi><mi>i</mi><mo>,</mo><mi>j</mi><mo>−</mo><mi mathvariant="normal">Δ</mi><mi>j</mi><mo stretchy="false">)</mo><msub><mi>A</mi><mrow><mi>i</mi><mo>−</mo><mi mathvariant="normal">Δ</mi><mi>i</mi></mrow></msub></mrow><mo>]</mo></mrow></math></div><span class="eqn">(7)</span></div>
+  <div class="plot" id="f10"></div>
+  <figcaption><b>Animation S8.</b> The two deposits of Eq. (7) that bin (<span class="m">i</span>, <span class="m">j</span>) receives from each row of configuration <span class="m">q</span>, one with (<span class="m">i</span>, <span class="m">j</span>) as the anchor bin and one with <span class="v">k</span><sub>3</sub> in (<span class="m">i</span>, <span class="m">j</span>). The mirror row adds two more, and the sum times <span class="m">C<sub>i</sub></span> gives the response Φ<sub><span class="m">q</span></sub>(<span class="m">i</span>, <span class="m">j</span>).</figcaption>
+</figure>
 
-<section class="part">
-  <div class="part-head"><h2>3a. From the table to SWRT</h2><span class="eqs">Eqs. (7)–(8)</span></div>
+<figure class="anim" id="step-f11">
+  <div class="eq"><div class="eqm"><math display="block"><mrow class="hl" data-k="S"><msub><mi>S</mi><mrow><mi>nl</mi><mo>,</mo><mi>K</mi></mrow></msub><mo stretchy="false">(</mo><mi>E</mi><mo stretchy="false">)</mo></mrow><mo>=</mo><mrow class="hl" data-k="sum"><munder><mo>∑</mo><mrow><mi>q</mi><mo>∈</mo><msub><mi>𝒬</mi><mi>K</mi></msub></mrow></munder></mrow><mrow class="hl" data-k="g"><msub><mi>g</mi><mi>q</mi></msub></mrow><mspace width="0.17em"></mspace><mrow class="hl" data-k="Phi"><msub><mi mathvariant="normal">Φ</mi><mi>q</mi></msub><mo stretchy="false">(</mo><mi>E</mi><mo stretchy="false">)</mo></mrow></math></div><span class="eqn">(8)</span></div>
+  <div class="plot" id="f11"></div>
+  <figcaption><b>Animation S9.</b> Weighted sum of Eq. (8) for the first four configurations of the greedy search on a toy table of 30 configurations with the weights <span class="m">J</span>Δ<span class="m">s</span>. The coefficients are refitted at each <span class="m">K</span>, and the sum approaches the output <span class="m">S</span><sub>nl,tab</sub> of the toy table for the JONSWAP spectrum of Fig. 4.</figcaption>
+</figure>
 
-  <div class="step" id="step-f10">
-    <div class="fig" id="f10"></div>
-    <div class="txt">
-      <div class="num">Step 10</div>
-      <h3>Two deposits per bin and row</h3>
-      <div class="eqb"><div class="stack"><math display="block"><msub><mi mathvariant="normal">Φ</mi><mi>q</mi></msub><mo stretchy="false">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo stretchy="false">)</mo><mo>=</mo><mrow class="hl" data-k="C"><msub><mi>C</mi><mi>i</mi></msub></mrow><mrow class="hl" data-k="sum"><munder><mo>∑</mo><mrow><mi>r</mi><mo>∈</mo><mi>q</mi></mrow></munder></mrow><mrow><mo>[</mo><mrow class="hl" data-k="t1"><mn>2</mn><msub><mi>w</mi><mi>r</mi></msub><mo stretchy="false">(</mo><mi>i</mi><mo stretchy="false">)</mo><msub><mi>N</mi><mi>r</mi></msub><mo stretchy="false">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo stretchy="false">)</mo><msub><mi>A</mi><mrow><mi>i</mi><mo>+</mo><mi mathvariant="normal">Δ</mi><mi>i</mi></mrow></msub></mrow><mo>−</mo><mrow class="hl" data-k="t2"><mn>2</mn><msub><mi>w</mi><mi>r</mi></msub><mo stretchy="false">(</mo><mi>i</mi><mo>−</mo><mi mathvariant="normal">Δ</mi><mi>i</mi><mo stretchy="false">)</mo><msub><mi>N</mi><mi>r</mi></msub><mo stretchy="false">(</mo><mi>i</mi><mo>−</mo><mi mathvariant="normal">Δ</mi><mi>i</mi><mo>,</mo><mi>j</mi><mo>−</mo><mi mathvariant="normal">Δ</mi><mi>j</mi><mo stretchy="false">)</mo><msub><mi>A</mi><mrow><mi>i</mi><mo>−</mo><mi mathvariant="normal">Δ</mi><mi>i</mi></mrow></msub></mrow><mo>]</mo></mrow></math></div><span class="tag">(7)</span></div>
-      <p>The response Φ<sub><span class="m">q</span></sub> of configuration <span class="m">q</span> is the <span class="m">S</span><sub>nl</sub> that the table gives with only the two rows of <span class="m">q</span>. Bin (<span class="m">i</span>, <span class="m">j</span>) receives two deposits from each row, one from the evaluation anchored at (<span class="m">i</span>, <span class="m">j</span>) and one from the evaluation anchored at (<span class="m">i</span> − Δ<span class="m">i</span>, <span class="m">j</span> − Δ<span class="m">j</span>) with its <span class="v">k</span><sub>3</sub> in bin (<span class="m">i</span>, <span class="m">j</span>).</p>
-      <p>The second deposit has the opposite sign and uses the weight and the area of its own anchor bin. The deposits of the row and its mirror image add up, and the factor <span class="m">C<sub>i</sub></span> = 2π<span class="m">ω<sub>i</sub>k<sub>i</sub></span>/<span class="m">c</span><sub><span class="m">g</span>,<span class="m">i</span></sub> turns the rate of change of the action density into <span class="m">S</span><sub>nl</sub>.</p>
-    </div>
-  </div>
+<h2>3b. Greedy selection and least-squares coefficients</h2>
 
-  <div class="step" id="step-f11">
-    <div class="fig" id="f11"></div>
-    <div class="txt">
-      <div class="num">Step 11</div>
-      <h3>SWRT is a weighted sum of responses</h3>
-      <div class="eqb"><div class="stack"><math display="block"><mrow class="hl" data-k="S"><msub><mi>S</mi><mrow><mi>nl</mi><mo>,</mo><mi>K</mi></mrow></msub><mo stretchy="false">(</mo><mi>E</mi><mo stretchy="false">)</mo></mrow><mo>=</mo><mrow class="hl" data-k="sum"><munder><mo>∑</mo><mrow><mi>q</mi><mo>∈</mo><msub><mi>𝒬</mi><mi>K</mi></msub></mrow></munder></mrow><mrow class="hl" data-k="g"><msub><mi>g</mi><mi>q</mi></msub></mrow><mspace width="0.17em"></mspace><mrow class="hl" data-k="Phi"><msub><mi mathvariant="normal">Φ</mi><mi>q</mi></msub><mo stretchy="false">(</mo><mi>E</mi><mo stretchy="false">)</mo></mrow></math></div><span class="tag">(8)</span></div>
-      <p>SWRT retains <span class="m">K</span> configurations of the table and multiplies the response of each by a coefficient <span class="m">g<sub>q</sub></span>. The responses are cubic in the action density through <span class="m">N</span><sub>1234</sub>, whereas <span class="m">S</span><sub>nl,<span class="m">K</span></sub> is linear in the coefficients. For given configurations the coefficients therefore follow from linear least squares.</p>
-      <p class="toy">The animation uses a toy table of 30 configurations built from real loci, with the weights <span class="m">J</span>Δ<span class="m">s</span> in place of the coupling coefficient. It adds the first four configurations of the greedy search on six toy spectra with their refitted coefficients and compares the sum with the output of the toy table for the JONSWAP spectrum of Fig. 4.</p>
-    </div>
-  </div>
-</section>
+<figure class="anim" id="step-f12">
+  <div class="eq"><div class="eqm"><math display="block"><mrow class="hl" data-k="e2"><msub><mover accent="true"><mi>e</mi><mo>¯</mo></mover><mn>2</mn></msub><mo>=</mo><mfrac><mn>1</mn><mi>P</mi></mfrac><munderover><mo>∑</mo><mrow><mi>p</mi><mo>=</mo><mn>1</mn></mrow><mi>P</mi></munderover><msub><mi>e</mi><mn>2</mn></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo></mrow><mo>,</mo><mspace width="1em"></mspace><msub><mi>e</mi><mn>2</mn></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>=</mo><mfrac><mrow class="hl" data-k="res"><msup><mrow><mo>‖</mo><munder><mo>∑</mo><mrow><mi>q</mi><mo>∈</mo><msub><mi>𝒬</mi><mi>K</mi></msub></mrow></munder><msub><mi>g</mi><mi>q</mi></msub><msub><mi mathvariant="normal">Φ</mi><mi>q</mi></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>−</mo><msub><mi>S</mi><mrow><mi>nl</mi><mo>,</mo><mi>tab</mi></mrow></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>‖</mo></mrow><mn>2</mn></msup></mrow><msup><mrow><mo>‖</mo><msub><mi>S</mi><mrow><mi>nl</mi><mo>,</mo><mi>tab</mi></mrow></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>‖</mo></mrow><mn>2</mn></msup></mfrac></math></div><span class="eqn">(9)</span></div>
+  <div class="eq"><div class="eqm"><math display="block"><mrow class="hl" data-k="M"><msub><mi>M</mi><mrow><mi>q</mi><msup><mi>q</mi><mo>′</mo></msup></mrow></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>p</mi><mo>=</mo><mn>1</mn></mrow><mi>P</mi></munderover><mo>⟨</mo><msub><mover accent="true"><mi mathvariant="normal">Φ</mi><mo>^</mo></mover><mi>q</mi></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>,</mo><msub><mover accent="true"><mi mathvariant="normal">Φ</mi><mo>^</mo></mover><msup><mi>q</mi><mo>′</mo></msup></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>⟩</mo></mrow></math><math display="block"><mrow class="hl" data-k="b"><msub><mi>b</mi><mi>q</mi></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>p</mi><mo>=</mo><mn>1</mn></mrow><mi>P</mi></munderover><mo>⟨</mo><msub><mover accent="true"><mi mathvariant="normal">Φ</mi><mo>^</mo></mover><mi>q</mi></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>,</mo><msub><mover accent="true"><mi>S</mi><mo>^</mo></mover><mrow><mi>nl</mi><mo>,</mo><mi>tab</mi></mrow></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>⟩</mo></mrow></math><math display="block"><mrow class="hl" data-k="g"><msub><mi>g</mi><msub><mi>𝒬</mi><mi>K</mi></msub></msub><mo>=</mo><msubsup><mi>M</mi><msub><mi>𝒬</mi><mi>K</mi></msub><mrow><mo>−</mo><mn>1</mn></mrow></msubsup><msub><mi>b</mi><msub><mi>𝒬</mi><mi>K</mi></msub></msub></mrow></math></div><span class="eqn">(10)</span></div>
+  <div class="eq"><div class="eqm"><math display="block"><mrow class="hl" data-k="e2"><msub><mover accent="true"><mi>e</mi><mo>¯</mo></mover><mn>2</mn></msub><mo stretchy="false">(</mo><mi>𝒬</mi><mo stretchy="false">)</mo><mo>=</mo><mn>1</mn><mo>−</mo><mfrac><mn>1</mn><mi>P</mi></mfrac><msubsup><mi>b</mi><mi>𝒬</mi><mi mathvariant="normal">T</mi></msubsup><msubsup><mi>M</mi><mi>𝒬</mi><mrow><mo>−</mo><mn>1</mn></mrow></msubsup><msub><mi>b</mi><mi>𝒬</mi></msub></mrow></math></div><span class="eqn">(11)</span></div>
+  <div class="plot" id="f12"></div>
+  <figcaption><b>Animation S10.</b> Least squares of Eqs. (9)–(11) in three dimensions for one spectrum. The fitted sum is the orthogonal projection of the unit target <span class="m">Ŝ</span><sub>nl,tab</sub> onto one and then two normalized responses, and the squared residual is <span class="m">e</span><sub>2</sub> = 1 − <span class="m">b</span><sup>T</sup><span class="m">M</span><sup>−1</sup><span class="m">b</span>.</figcaption>
+</figure>
 
-<section class="part">
-  <div class="part-head"><h2>3b. Greedy selection and least-squares coefficients</h2><span class="eqs">Eqs. (9)–(12)</span></div>
+<figure class="anim" id="step-f13">
+  <div class="eq"><div class="eqm"><math display="block"><msub><mi>q</mi><mi>K</mi></msub><mo>=</mo><mrow class="hl" data-k="arg"><munder><mi>arg min</mi><mrow><mi>q</mi><mo>∉</mo><msub><mi>𝒬</mi><mrow><mi>K</mi><mo>−</mo><mn>1</mn></mrow></msub></mrow></munder></mrow><mspace width="0.17em"></mspace><msub><mover accent="true"><mi>e</mi><mo>¯</mo></mover><mn>2</mn></msub><mrow class="hl" data-k="un"><mo>(</mo><msub><mi>𝒬</mi><mrow><mi>K</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>∪</mo><mo stretchy="false">{</mo><mi>q</mi><mo stretchy="false">}</mo><mo>)</mo></mrow></math></div><span class="eqn">(12)</span></div>
+  <div class="plot" id="f13"></div>
+  <figcaption><b>Animation S11.</b> Greedy selection of Eq. (12) on the toy table, with <span class="m">ē</span><sub>2</sub> of each candidate added to the retained set (bars) and <span class="m">ē</span><sub>2</sub> of the retained set (curve). In the paper <span class="m">ē</span><sub>2</sub> falls from 0.6 with one configuration to 0.003 with the 36 configurations of SWRT.</figcaption>
+</figure>
 
-  <div class="step" id="step-f12">
-    <div class="fig" id="f12"></div>
-    <div class="txt">
-      <div class="num">Step 12</div>
-      <h3>Least squares as a projection</h3>
-      <div class="eqb"><div class="stack"><math display="block"><mrow class="hl" data-k="e2"><msub><mover accent="true"><mi>e</mi><mo>¯</mo></mover><mn>2</mn></msub><mo>=</mo><mfrac><mn>1</mn><mi>P</mi></mfrac><munderover><mo>∑</mo><mrow><mi>p</mi><mo>=</mo><mn>1</mn></mrow><mi>P</mi></munderover><msub><mi>e</mi><mn>2</mn></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo></mrow><mo>,</mo><mspace width="1em"></mspace><msub><mi>e</mi><mn>2</mn></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>=</mo><mfrac><mrow class="hl" data-k="res"><msup><mrow><mo>‖</mo><munder><mo>∑</mo><mrow><mi>q</mi><mo>∈</mo><msub><mi>𝒬</mi><mi>K</mi></msub></mrow></munder><msub><mi>g</mi><mi>q</mi></msub><msub><mi mathvariant="normal">Φ</mi><mi>q</mi></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>−</mo><msub><mi>S</mi><mrow><mi>nl</mi><mo>,</mo><mi>tab</mi></mrow></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>‖</mo></mrow><mn>2</mn></msup></mrow><msup><mrow><mo>‖</mo><msub><mi>S</mi><mrow><mi>nl</mi><mo>,</mo><mi>tab</mi></mrow></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>‖</mo></mrow><mn>2</mn></msup></mfrac></math></div><span class="tag">(9)</span></div>
-      <div class="eqb"><div class="stack"><math display="block"><mrow class="hl" data-k="M"><msub><mi>M</mi><mrow><mi>q</mi><msup><mi>q</mi><mo>′</mo></msup></mrow></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>p</mi><mo>=</mo><mn>1</mn></mrow><mi>P</mi></munderover><mo>⟨</mo><msub><mover accent="true"><mi mathvariant="normal">Φ</mi><mo>^</mo></mover><mi>q</mi></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>,</mo><msub><mover accent="true"><mi mathvariant="normal">Φ</mi><mo>^</mo></mover><msup><mi>q</mi><mo>′</mo></msup></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>⟩</mo></mrow></math><math display="block"><mrow class="hl" data-k="b"><msub><mi>b</mi><mi>q</mi></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>p</mi><mo>=</mo><mn>1</mn></mrow><mi>P</mi></munderover><mo>⟨</mo><msub><mover accent="true"><mi mathvariant="normal">Φ</mi><mo>^</mo></mover><mi>q</mi></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>,</mo><msub><mover accent="true"><mi>S</mi><mo>^</mo></mover><mrow><mi>nl</mi><mo>,</mo><mi>tab</mi></mrow></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>⟩</mo></mrow></math><math display="block"><mrow class="hl" data-k="g"><msub><mi>g</mi><msub><mi>𝒬</mi><mi>K</mi></msub></msub><mo>=</mo><msubsup><mi>M</mi><msub><mi>𝒬</mi><mi>K</mi></msub><mrow><mo>−</mo><mn>1</mn></mrow></msubsup><msub><mi>b</mi><msub><mi>𝒬</mi><mi>K</mi></msub></msub></mrow></math></div><span class="tag">(10)</span></div>
-      <div class="eqb"><div class="stack"><math display="block"><mrow class="hl" data-k="e2"><msub><mover accent="true"><mi>e</mi><mo>¯</mo></mover><mn>2</mn></msub><mo stretchy="false">(</mo><mi>𝒬</mi><mo stretchy="false">)</mo><mo>=</mo><mn>1</mn><mo>−</mo><mfrac><mn>1</mn><mi>P</mi></mfrac><msubsup><mi>b</mi><mi>𝒬</mi><mi mathvariant="normal">T</mi></msubsup><msubsup><mi>M</mi><mi>𝒬</mi><mrow><mo>−</mo><mn>1</mn></mrow></msubsup><msub><mi>b</mi><mi>𝒬</mi></msub></mrow></math></div><span class="tag">(11)</span></div>
-      <p>Each spectrum enters the fit through the normalized output <span class="m">Ŝ</span><sub>nl,tab</sub> of unit length, and <span class="m">e</span><sub>2</sub> is the squared distance between the fitted sum of normalized responses and <span class="m">Ŝ</span><sub>nl,tab</sub>. The overlaps of the responses with each other form <span class="m">M</span>, and their overlaps with <span class="m">Ŝ</span><sub>nl,tab</sub> form <span class="m">b</span>.</p>
-      <p>The coefficients <span class="m">g</span> = <span class="m">M</span><sup>−1</sup><span class="m">b</span> make the fitted sum the orthogonal projection of <span class="m">Ŝ</span><sub>nl,tab</sub> onto the span of the retained responses. The squared residual of this projection is 1 − <span class="m">b</span><sup>T</sup><span class="m">M</span><sup>−1</sup><span class="m">b</span>, which gives Eq. (11) after averaging over the <span class="m">P</span> spectra.</p>
-      <p class="toy">The figure uses three dimensions in place of the 40 × 24 bins and a single spectrum in place of the 15,000 synthetic spectra of the paper.</p>
-    </div>
-  </div>
+<h2>3e. The retained configurations</h2>
 
-  <div class="step" id="step-f13">
-    <div class="fig" id="f13"></div>
-    <div class="txt">
-      <div class="num">Step 13</div>
-      <h3>Greedy selection</h3>
-      <div class="eqb"><div class="stack"><math display="block"><msub><mi>q</mi><mi>K</mi></msub><mo>=</mo><mrow class="hl" data-k="arg"><munder><mi>arg min</mi><mrow><mi>q</mi><mo>∉</mo><msub><mi>𝒬</mi><mrow><mi>K</mi><mo>−</mo><mn>1</mn></mrow></msub></mrow></munder></mrow><mspace width="0.17em"></mspace><msub><mover accent="true"><mi>e</mi><mo>¯</mo></mover><mn>2</mn></msub><mrow class="hl" data-k="un"><mo>(</mo><msub><mi>𝒬</mi><mrow><mi>K</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>∪</mo><mo stretchy="false">{</mo><mi>q</mi><mo stretchy="false">}</mo><mo>)</mo></mrow></math></div><span class="tag">(12)</span></div>
-      <p>The search starts from the empty set and adds one configuration at a time. Each candidate is tried together with the configurations already retained and with refitted coefficients, and Eq. (11) gives its error from <span class="m">M</span> and <span class="m">b</span> without recomputing any response.</p>
-      <p>The bars give <span class="m">ē</span><sub>2</sub> of every candidate of the toy table at each step, and the curve traces the error of the retained set. In the paper <span class="m">ē</span><sub>2</sub> along the greedy path falls from 0.6 with one configuration to 0.06 with 10 and 0.01 with 20, and swaps and random restarts lead to the 36 configurations of SWRT with <span class="m">ē</span><sub>2</sub> = 0.003.</p>
-    </div>
-  </div>
-</section>
+<figure class="anim" id="step-f14">
+  <div class="eq"><div class="eqm"><math display="block"><mrow class="hl" data-k="tab"><msub><mi>S</mi><mrow><mi>nl</mi><mo>,</mo><mi>tab</mi></mrow></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><mn>592</mn></munderover><msub><mi mathvariant="normal">Φ</mi><mi>q</mi></msub></mrow><mo>,</mo><mspace width="1.4em"></mspace><mrow class="hl" data-k="K"><msub><mi>S</mi><mrow><mi>nl</mi><mo>,</mo><mi>K</mi></mrow></msub><mo>=</mo><munder><mo>∑</mo><mrow><mi>q</mi><mo>∈</mo><msub><mi>𝒬</mi><mi>K</mi></msub></mrow></munder><msub><mi>g</mi><mi>q</mi></msub><msub><mi mathvariant="normal">Φ</mi><mi>q</mi></msub><mo>,</mo><mspace width="0.5em"></mspace><mi>K</mi><mo>=</mo><mn>36</mn></mrow></math></div><span class="eqn">(8)</span></div>
+  <div class="plot" id="f14"></div>
+  <figcaption><b>Animation S12.</b> Quadruplets of WRT and SWRT with one row of each configuration and without the mirror images, as in Fig. 2 of the paper. Orange dots mark the ends of <span class="v">k</span><sub>2</sub> and blue plus signs those of <span class="v">k</span><sub>3</sub>, and gray lines are the loci of their offsets. WRT has 592 configurations (1,184 rows) on 54 offsets, of which SWRT retains 36 (72 rows) on 18 offsets.</figcaption>
+</figure>
 
 <footer>
-  <p>The geometry on this page follows the paper exactly, including the loci, the grid points, the bin areas and the group velocities. The coupling coefficient <span class="m">G</span> is not evaluated here, and the panels that need weights use <span class="m">J</span>Δ<span class="m">s</span> or a unit weight in its place.</p>
-  <p>The toy table of section 3 shows how the fit and the search work, and its numbers are not results of the paper.</p>
+  <p>The coupling coefficient <span class="m">G</span> is not evaluated on this page, and Animations S7 and S9–S11 use a unit weight or <span class="m">J</span>Δ<span class="m">s</span> in its place. The toy table of Animations S9–S11 shows how the fit and the search work and does not reproduce results of the paper.</p>
+  <p>The WRT points of Animation S12 follow the point placement of Xnl and give the 1,184 rows of the table, and the SWRT points are the rows of the operator file of WW3-SWRT.</p>
 </footer>
 </div>
 
@@ -693,9 +576,8 @@ function F2() {
   const t3 = klab(gp, 0, 0, 3), t2 = klab(gp, F.X(K2[0]) - 10, F.Y(K2[1]) - 6, 2), t4 = klab(gp, F.X(K4[0]) - 14, F.Y(K4[1]) + 2, 4);
   el('line', { x1: 0, y1: PH + 2, x2: W, y2: PH + 2, class: 'ax2' }, s);
   const cs = 15, wx = W - 11 * cs - 18, wy = PH + 20;
-  text(s, 12, PH + 30, 'pair window of k₁', 'lbb');
-  text(s, 12, PH + 50, 'offsets (Δi, Δj) of k₃ in bins,', 'lbs');
-  text(s, 12, PH + 66, 'Δi upward and Δj across', 'lbs');
+  text(s, 12, PH + 30, 'pair window', 'lbb');
+  text(s, 12, PH + 48, 'offsets (Δi, Δj) of k₃', 'lbs');
   const cells = {};
   for (let di = 0; di <= 4; di++) for (let dj = -5; dj <= 5; dj++) cells[di + ',' + dj] = el('rect', { x: wx + (dj + 5) * cs, y: wy + (4 - di) * cs, width: cs - 2, height: cs - 2, rx: 2, class: (di || dj) ? 'cellf' : 'tint1' }, s);
   text(s, wx - 6, wy + 4 * cs + 10, '0', 'lbs', 'end'); text(s, wx - 6, wy + 10, '4', 'lbs', 'end');
@@ -792,26 +674,6 @@ function F3() {
   };
 }
 
-/* ---------- Step 4: the spectral grid (static) ---------- */
-function F4() {
-  const W = 430, Hh = 280; const s = svgIn('f4', W, Hh, 'The 40 frequency bins on a log axis and the 24 directions');
-  const x0 = 24, x1 = W - 20, l0 = Math.log(0.03), l1 = Math.log(1.6);
-  const X = fr => x0 + (Math.log(fr) - l0) / (l1 - l0) * (x1 - x0), y = 60;
-  el('line', { x1: x0, y1: y, x2: x1, y2: y, class: 'ax2' }, s);
-  for (let i = 1; i <= NF; i++) { const hi = i === 20; el('line', { x1: fx(X(f(i))), y1: y - (hi ? 16 : 9), x2: fx(X(f(i))), y2: y + (hi ? 16 : 9), class: 'arr ' + (hi ? 'a1' : 'am'), 'stroke-width': hi ? 2.4 : 1 }, s); }
-  [0.05, 0.1, 0.2, 0.5, 1].forEach(v => text(s, X(v), y + 30, v + ' Hz', 'lbs', 'middle'));
-  text(s, X(f(20)), y - 22, 'bin 20, 0.21 Hz', 'lbb', 'middle');
-  text(s, x0, 20, 'frequency, ratio 1.1 between bins (40 bins)', 'lbs');
-  const cx = W / 2, cy = 190, rr = 64;
-  for (let d = 0; d < 360; d += 15) { const u = P(rr, d); el('line', { x1: cx, y1: cy, x2: fx(cx + u[0]), y2: fx(cy - u[1]), class: 'ax2' }, s); }
-  el('circle', { cx, cy, r: rr, class: 'ax2' }, s);
-  arrow(s, '1', cx, cy, cx + rr, cy);
-  const u3 = P(rr, 30); arrow(s, '3', cx, cy, cx + u3[0], cy - u3[1]);
-  text(s, cx + rr + 8, cy + 4, '0°', 'lbs'); text(s, cx + u3[0] + 6, cy - u3[1] - 4, '30°', 'lbs');
-  text(s, 24, 136, '24 directions, 15° apart', 'lbs');
-  return null;
-}
-
 /* ---------- Step 5, Eq. (5): points on the locus ---------- */
 function F5() {
   const W = 430, PH = 430, H = 560;
@@ -845,7 +707,7 @@ function F5() {
   for (let q = 0; q < 8; q++) { lines.push(el('line', { class: 'thin' }, cur)); nds.push(el('circle', { r: 3.4, class: 'node' }, cur)); }
   const rg2 = el('circle', { r: 5.5, class: 'ring' }, cur), rg4 = el('circle', { r: 5.5, class: 'ring dashed' }, cur);
   el('line', { x1: 0, y1: PH + 2, x2: W, y2: PH + 2, class: 'ax2' }, s);
-  text(s, 14, PH + 22, 'action densities and N₁₂₃₄(m) for a JONSWAP spectrum peaked at 0.2 Hz', 'lbs');
+  text(s, 14, PH + 22, 'n₁ to n₄ and N₁₂₃₄(m), JONSWAP peak at 0.2 Hz', 'lbs');
   const mt = text(s, W - 14, PH + 44, '', 'lbb', 'end');
   const BY = PH + 104, BH = 62, bx = [40, 104, 168, 232], cls = ['tint1', 'tint2', 'tint3', 'tint4'], nm = ['n₁', 'n₂', 'n₃', 'n₄'];
   el('line', { x1: 30, y1: BY, x2: 270, y2: BY, class: 'ax2' }, s);
@@ -932,8 +794,8 @@ function F6() {
       let keys = [], label = 'T(k₁, k₃) is evaluated once for the pair';
       if (u >= 0.12 && u < 0.32) { keys = ['m']; label = 'The bin of k₃ loses T k₁Δk₁Δθ in density'; }
       else if (u >= 0.32 && u < 0.52) { keys = ['p']; label = 'The bin of k₁ gains T k₃Δk₃Δθ in density'; }
-      else if (u >= 0.52 && u < 0.72) { keys = ['p', 'm']; label = 'The two changes of density differ by the ratio of the bin areas'; }
-      else if (u >= 0.72) { keys = ['p', 'm']; label = 'Times the area A of its own bin each change is the same amount of action, and the two cancel'; }
+      else if (u >= 0.52 && u < 0.72) { keys = ['p', 'm']; label = 'The changes of density differ by the ratio of the bin areas'; }
+      else if (u >= 0.72) { keys = ['p', 'm']; label = 'The two changes of action cancel'; }
       return { keys, label };
     }
   };
@@ -1160,7 +1022,7 @@ function F11() {
   rich(s, 121, 242, [['S', ''], ['nl,K', 'sub'], ['  from the sum', '']], 'lbb', 'middle');
   rich(s, 311, 242, [['S', ''], ['nl,tab', 'sub'], ['  of the toy table', '']], 'lbb', 'middle');
   const vT = maxAbs(ST); pT.set(ST, vT);
-  text(s, 46, 436, 'θ from −105° to 105° across and f from 0.06 to 0.37 Hz upward', 'lbs');
+  text(s, 46, 436, 'θ from −105° to 105°, f from 0.06 to 0.37 Hz', 'lbs');
   const sums = path.map(st => { const o = new Float64Array(NF * ND); st.set.forEach((q, i) => { const gq = st.g[i], ph = PHI[q]; for (let x = 0; x < o.length; x++) o[x] += gq * ph[x]; }); return o; });
   const zero = new Float64Array(NF * ND), mixed = new Float64Array(NF * ND);
   let lastKey = '';
@@ -1255,7 +1117,7 @@ function F13() {
     ords.push(text(s, xq(q) + 4.25, ybot + 26, '', 'lbs', 'middle'));
   }
   TOY_OFFS.forEach(([di, dj], k) => text(s, xq(3 * k) + 15, ybot + 42, `(${di},${dj})`, 'lbs', 'middle'));
-  text(s, 50, ybot + 58, 'candidates grouped by offset (Δi, Δj), three locus points each', 'lbs');
+  text(s, 50, ybot + 58, 'candidates by offset (Δi, Δj)', 'lbs');
   const PX = k => 70 + (k - 1) * 62, PY0 = 418, PY1 = 300, py = e => PY0 - (PY0 - PY1) * lg(e);
   el('line', { x1: 0, y1: 276, x2: W, y2: 276, class: 'ax2' }, s);
   rich(s, 8, 292, [['ē', ''], ['2', 'sub'], [' of the retained set', '']], 'lbs');
@@ -1286,6 +1148,95 @@ function F13() {
       const r = TOYROWS[chosen];
       if (tau < 0.45) return { keys: ['un'], label: `Step ${K}: ē₂ of every candidate added to the ${K - 1} retained configuration${K - 1 === 1 ? '' : 's'}` };
       return { keys: ['arg', 'un'], label: `Step ${K}: a configuration at offset (${r.di}, ${r.dj}) gives the smallest ē₂ = ${path[K - 1].e.toFixed(3)}` };
+    }
+  };
+}
+
+/* ---------- Animation S12: quadruplets of WRT and SWRT (Fig. 2g, h of the paper) ---------- */
+const SWRT36 = [[0,1,-7.442,2.6646],[0,1,-7.442,10.3354],[0,1,-4.4445,1.6766],[0,1,-4.4445,11.3234],[0,1,-2.4551,1.2983],[0,1,-2.4551,11.7016],[0,1,1.9123,0.8463],[0,1,2.5923,-11.8032],[0,1,4.259,0.7207],[0,2,0.1534,-11.9681],[0,2,2.5057,1.6131],[1,0,-3.8886,2.769],[1,0,-1.4538,2.2136],[1,0,-0.873,1.9824],[1,0,0.0268,1.4784],[1,0,0.3456,1.2064],[1,0,0.6142,0.921],[1,1,-4.7666,1.2054],[1,1,-4.7665,7.0185],[1,1,-1.9665,0.8051],[1,1,3.0977,1.4935],[1,1,4.3805,2.0046],[1,1,6.1477,3.4595],[1,2,0.0107,9.2919],[1,2,5.1604,2.1832],[1,2,8.5,2.9637],[1,4,5.964,3.248],[2,1,-2.8953,0.7826],[2,1,-0.6454,0.4927],[2,1,3.226,3.9389],[2,1,3.7742,2.5409],[2,4,1.4565,9.4148],[2,4,8.9811,4.2356],[3,0,0.5657,1.6478],[3,3,6.0451,3.4913],[3,3,7.5865,4.6757]];
+function xnlRows(di, dj) {
+  const k3 = P(KB(20 + di), dj * DTH), pts = [];
+  if (di === 0) {
+    const half = 7.5 * dj * DEG, k1m = nrm(K1), xk0 = k1m * Math.cos(half), yk0 = k1m * Math.sin(half), pm = 2 * k1m * Math.sin(half), line = [];
+    for (let ip = 1; ip <= 30; ip++) {
+      const w2 = 2 * (ip - 15) * 3 / 29, xx = w2 * xk0, q = [xx * Math.cos(half) - yk0 * Math.sin(half), yk0 * Math.cos(half) + xx * Math.sin(half)];
+      line.push(q);
+      if (Math.abs(w2 - 1) * xk0 > pm) pts.push(q);
+    }
+    return { k3, pts, curve: line, closed: false };
+  }
+  const L = locus(K1, k3, { n: 1440 }), A = arc(L.pts, true), C = sub(k3, K1);
+  const iFar = Math.round((((Math.atan2(C[1], C[0]) / TAU) % 1) + 1) % 1 * L.pts.length) % L.pts.length;
+  for (let q = 0; q < 30; q++) {
+    if (dj === 0 && (q === 0 || q >= 15)) continue;
+    const p = A.at((A.cum[iFar] + q * A.L / 30) % A.L);
+    if (keepH(p, k3, L.p)) pts.push(p);
+  }
+  return { k3, pts, curve: L.pts.filter((_, i) => i % 4 === 0), closed: true };
+}
+let WRTROWS = null;
+function getWrt() {
+  if (WRTROWS) return WRTROWS;
+  const offs = [];
+  for (let di = 0; di <= 4; di++) for (let dj = 0; dj <= 5; dj++) if (di || dj) offs.push(Object.assign({ di, dj }, xnlRows(di, dj)));
+  offs.forEach(o => { o.keep = o.pts.map(() => false); o.kept = false; });
+  let worst = 0;
+  SWRT36.forEach(([di, dj, u2, v2]) => {
+    const o = offs.find(x => x.di === di && x.dj === dj), k2 = P(kOf(f(20 + u2)), v2 * DTH);
+    let bi = 0, bd = 1e9; o.pts.forEach((p, i) => { const d = nrm(sub(p, k2)); if (d < bd) { bd = d; bi = i; } });
+    o.keep[bi] = true; o.kept = true; worst = Math.max(worst, bd);
+  });
+  WRTROWS = { offs, worst, n: offs.reduce((a, o) => a + o.pts.length, 0), nk: offs.reduce((a, o) => a + o.keep.filter(Boolean).length, 0) };
+  return WRTROWS;
+}
+function F14() {
+  const D = getWrt(), W = 430, PH = 392, H = 456;
+  const s = svgIn('f14', W, H, 'The k2 ends of one row of each of the 592 configurations of WRT, then the 36 configurations that SWRT retains', PH);
+  const F = frameR(40, 6, W - 48, PH - 40, -0.25, 0.65, -0.25, 0.55, 2);
+  const x0 = F.X(-0.25), x1 = F.X(0.65), y0 = F.Y(-0.25), y1 = F.Y(0.55);
+  const cl = el('clipPath', { id: 'f14-cl' }, s); el('rect', { x: fx(x0), y: fx(y1), width: fx(x1 - x0), height: fx(y0 - y1) }, cl);
+  const gp = grp(s, { 'clip-path': 'url(#f14-cl)' });
+  el('line', { x1: fx(F.X(0)), y1: fx(y1), x2: fx(F.X(0)), y2: fx(y0), class: 'ax' }, gp);
+  el('line', { x1: fx(x0), y1: fx(F.Y(0)), x2: fx(x1), y2: fx(F.Y(0)), class: 'ax' }, gp);
+  el('rect', { x: fx(x0), y: fx(y1), width: fx(x1 - x0), height: fx(y0 - y1), class: 'panelbox' }, s);
+  [-0.2, 0, 0.2, 0.4, 0.6].forEach(v => text(s, F.X(v), y0 + 14, String(v).replace('-', '−'), 'lbs', 'middle'));
+  [-0.2, 0, 0.2, 0.4].forEach(v => text(s, x0 - 5, F.Y(v) + 4, String(v).replace('-', '−'), 'lbs', 'end'));
+  rich(s, (x0 + x1) / 2, y0 + 30, [['k', ''], ['x', 'sub'], [' (rad m⁻¹)', '']], 'lbs', 'middle');
+  const ty = rich(s, 0, 0, [['k', ''], ['y', 'sub'], [' (rad m⁻¹)', '']], 'lbs', 'middle'); setA(ty, { transform: `translate(10,${fx((y0 + y1) / 2)}) rotate(-90)` });
+  D.offs.forEach(o => { o.lc = el('path', { d: pathOf(F, o.curve, o.closed), class: 'trail' }, gp); });
+  D.offs.forEach(o => { const X = F.X(o.k3[0]), Y = F.Y(o.k3[1]); o.pl = el('path', { d: `M${fx(X - 4)},${fx(Y)} H${fx(X + 4)} M${fx(X)},${fx(Y - 4)} V${fx(Y + 4)}`, class: 'plus' }, gp); });
+  D.offs.forEach(o => { o.dots = o.pts.map((p, i) => el('circle', { cx: fx(F.X(p[0])), cy: fx(F.Y(p[1])), r: 2.4, class: o.keep[i] ? 'end2 kept' : 'end2', opacity: 0 }, gp)); });
+  arrow(gp, '1', F.X(0), F.Y(0), F.X(K1[0]), F.Y(K1[1]));
+  el('line', { x1: 0, y1: PH + 2, x2: W, y2: PH + 2, class: 'ax2' }, s);
+  const tw = text(s, 14, PH + 26, 'WRT   592 configurations, 1,184 rows, 54 offsets', 'lbb');
+  const ts = text(s, 14, PH + 48, 'SWRT   36 configurations, 72 rows, 18 offsets', 'lbb');
+  const order = D.offs.slice().sort((a, b) => (a.di - b.di) || (a.dj - b.dj));
+  let lastKey = '';
+  return {
+    dur: 14000, rest: 0.8,
+    draw(u) {
+      const fadeIn = seg(u, 0, 0.08), grow = seg(u, 0.08, 0.38), cut = ease(seg(u, 0.5, 0.66));
+      const shown = Math.floor(grow * order.length + 1e-9);
+      const key = fadeIn.toFixed(3) + ':' + shown + ':' + cut.toFixed(3);
+      if (key !== lastKey) {
+        lastKey = key;
+        let nShown = 0;
+        order.forEach((o, gi) => {
+          const vis = gi < shown || u >= 0.38 ? 1 : 0;
+          if (vis) nShown += o.pts.length;
+          o.lc.setAttribute('opacity', (fadeIn * (o.kept ? 1 : 1 - 0.75 * cut)).toFixed(3));
+          o.pl.setAttribute('opacity', (fadeIn * (o.kept ? 1 : 1 - 0.85 * cut)).toFixed(3));
+          o.dots.forEach((d, i) => { const k = o.keep[i]; d.setAttribute('opacity', vis ? (k ? 1 : (1 - 0.88 * cut)).toFixed(3) : 0); d.setAttribute('r', k ? fx(2.4 + 1.8 * cut) : 2.4); });
+        });
+        tw.setAttribute('opacity', u < 0.5 ? 1 : (1 - 0.6 * cut).toFixed(3));
+        ts.setAttribute('opacity', cut.toFixed(3));
+        this._n = nShown;
+      }
+      if (u < 0.08) return { keys: ['tab'], label: 'Loci and k₃ of the 29 offsets with Δj ≥ 0' };
+      if (u < 0.38) return { keys: ['tab'], label: `WRT, ${this._n} of 592 configurations` };
+      if (u < 0.5) return { keys: ['tab'], label: 'WRT, 592 configurations on 54 offsets' };
+      if (u < 0.66) return { keys: ['K'], label: 'SWRT keeps 36 of the 592 configurations' };
+      return { keys: ['K'], label: 'SWRT, 36 configurations on 18 offsets' };
     }
   };
 }
@@ -1331,7 +1282,7 @@ function loop(now) {
   window.requestAnimationFrame(loop);
 }
 function build(id, fn) { try { const spec = fn(); if (spec) register(id, spec); } catch (e) { console.error('figure ' + id, e); } }
-[['f1', F1], ['f2', F2], ['f3', F3], ['f4', F4], ['f5', F5], ['f6', F6], ['f7', F7], ['f9', F9], ['f10', F10], ['f11', F11], ['f12', F12], ['f13', F13]].forEach(([id, fn]) => build(id, fn));
+[['f1', F1], ['f2', F2], ['f3', F3], ['f5', F5], ['f6', F6], ['f7', F7], ['f9', F9], ['f10', F10], ['f11', F11], ['f12', F12], ['f13', F13], ['f14', F14]].forEach(([id, fn]) => build(id, fn));
 if (HAS_IO) {
   const io = new window.IntersectionObserver(es => { es.forEach(e => { const a = ANIMS.find(x => x.host === e.target); if (a) a.visible = e.isIntersecting; }); }, { rootMargin: '40px 0px' });
   ANIMS.forEach(a => io.observe(a.host));
