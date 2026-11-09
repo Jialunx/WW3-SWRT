@@ -42,6 +42,7 @@ figure.anim{margin:22px 0 0;padding:0 0 22px;border-bottom:1px solid var(--grid)
 .eq{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;margin:0 0 4px}
 .eqm{min-width:0;overflow-x:auto}
 .eqm math{font-size:1.08rem;margin:4px 0}
+@media (max-width:480px){.eq{gap:6px}.eqm math{font-size:.98rem}.eqn{min-width:2em}}
 .eqn{color:var(--muted);min-width:2.6em;text-align:right}
 math{font-family:"STIX Two Math", "Cambria Math", "Latin Modern Math", math}
 math .hl{border-radius:2px;transition:background-color .25s}
@@ -129,7 +130,7 @@ footer p{margin:0 0 8px}
 <header>
   <h1>Supplemental Material (draft)</h1>
   <p class="ptitle">A New Nonlinear Four-Wave Interaction Scheme for Ocean Wave Models: Webb–Resio–Tracy Accuracy near DIA Cost</p>
-  <p class="intro">Animations S1–S12 show the equations of sections 2 and 3, and the terms of each equation are highlighted while its animation shows them. The geometry is computed for deep water on the spectral grid of the paper with 40 frequencies and 24 directions and with <span class="v">k</span><sub>1</sub> in frequency bin 20 (0.21 Hz). The wavenumbers <span class="v">k</span><sub>1</sub>, <span class="v">k</span><sub>2</sub>, <span class="v">k</span><sub>3</sub> and <span class="v">k</span><sub>4</sub> are drawn in red, orange, blue and light blue.</p>
+  <p class="intro">Animations S1–S12 show the equations of sections 2 and 3, and the terms of each equation are highlighted while its animation shows them. The geometry is computed for deep water on the spectral grid of the paper with 40 frequencies and 24 directions and with <span class="v">k</span><sub>1</sub> in frequency bin 20 (0.21 Hz). The wavenumbers <span class="v">k</span><sub>1</sub>, <span class="v">k</span><sub>2</sub>, <span class="v">k</span><sub>3</sub> and <span class="v">k</span><sub>4</sub> are drawn in red, orange, blue and light blue, and positive and negative deposits in green and purple.</p>
 </header>
 
 <h2>2a. The collision integral in Webb’s form</h2>
@@ -482,7 +483,7 @@ function hRuns(pts, k3, p) {
 
 /* ---------- Step 1, Eq. (1): resonance ---------- */
 function F1() {
-  const W = 430, PH = 430, H = 584;
+  const W = 430, PH = 430, H = 598;
   const s = svgIn('f1', W, H, 'k2 traces its locus for the pair of Fig. 1 while the four wavenumbers stay closed head to tail and the two frequency sums are compared', PH);
   const F = frame(W, PH, VIEW[0], VIEW[1], VIEW[2], VIEW[3], 14);
   const gp = grp(s, { 'clip-path': 'url(#f1-clip)' });
@@ -750,7 +751,7 @@ function sectorD(F, k0, k1, a0, a1) {
   return `M${pt(r1, a0)} A${fx(r1)},${fx(r1)} 0 0 0 ${pt(r1, a1)} L${pt(r0, a1)} A${fx(r0)},${fx(r0)} 0 0 1 ${pt(r0, a0)} Z`;
 }
 function F6() {
-  const W = 430, PH = 330, H = 476;
+  const W = 430, PH = 330, H = 486;
   const s = svgIn('f6', W, H, 'One evaluation of the pair moves action from the bin of k3 to the bin of k1, and the two changes of density differ by the ratio of the bin areas while the changes of action cancel', PH);
   const F = frame(W, PH, 0.10, 0.31, -0.035, 0.19, 14);
   const gp = grp(s, { 'clip-path': 'url(#f6-clip)' });
@@ -771,13 +772,13 @@ function F6() {
   const pulse = el('circle', { cx: fx(cp[0]), cy: fx(cp[1] + 6), r: 4, class: 'pulse' }, gp);
   const pk = []; for (let q = 0; q < 9; q++) pk.push(el('circle', { r: 3.2, class: 'packet', opacity: 0 }, gp));
   el('line', { x1: 0, y1: PH + 2, x2: W, y2: PH + 2, class: 'ax2' }, s);
-  const BY = PH + 80, A1 = AREA[20], A3 = AREA[22];
-  text(s, 40, PH + 24, 'change of density', 'lbb'); text(s, 244, PH + 24, 'change of action', 'lbb');
+  const BY = PH + 92, A1 = AREA[20], A3 = AREA[22];
+  text(s, 40, PH + 20, 'change of density', 'lbb'); text(s, 244, PH + 20, 'change of action', 'lbb');
   el('line', { x1: 34, y1: BY, x2: 196, y2: BY, class: 'ax2' }, s); el('line', { x1: 238, y1: BY, x2: 400, y2: BY, class: 'ax2' }, s);
   const mk = (x, c) => el('rect', { x, y: BY, width: 34, height: 0, class: c }, s);
   const dn1 = mk(64, 'tint1'), dn3 = mk(130, 'tint3'), da1 = mk(268, 'tint1'), da3 = mk(334, 'tint3');
-  const vl = [text(s, 81, BY - 58, '', 'lbs', 'middle'), text(s, 147, BY + 52, '', 'lbs', 'middle'), text(s, 285, BY - 48, '', 'lbs', 'middle'), text(s, 351, BY + 56, '', 'lbs', 'middle')];
-  text(s, 81, H - 4, 'k₁ bin', 'lbs', 'middle'); text(s, 147, H - 4, 'k₃ bin', 'lbs', 'middle'); text(s, 285, H - 4, 'k₁ bin', 'lbs', 'middle'); text(s, 351, H - 4, 'k₃ bin', 'lbs', 'middle');
+  const vl = [text(s, 81, BY - 55, '', 'lbs', 'middle'), text(s, 147, BY + 37, '', 'lbs', 'middle'), text(s, 285, BY - 45, '', 'lbs', 'middle'), text(s, 351, BY + 53, '', 'lbs', 'middle')];
+  text(s, 81, BY + 14, 'k₁ bin', 'lbs', 'middle'); text(s, 147, BY - 6, 'k₃ bin', 'lbs', 'middle'); text(s, 285, BY + 14, 'k₁ bin', 'lbs', 'middle'); text(s, 351, BY - 6, 'k₃ bin', 'lbs', 'middle');
   const up = (r, h) => setA(r, { y: fx(BY - h), height: fx(h) }), down = (r, h) => setA(r, { y: BY, height: fx(h) });
   return {
     dur: 13000, rest: 0.95,
@@ -1070,7 +1071,7 @@ function F12() {
   const plane = el('path', { class: 'plane', d: 'M0,0' }, s);
   const vS = arrow(s, 'f', 0, 0, 1, 0), vA = arrow(s, '3', 0, 0, 1, 0), vB = arrow(s, '2', 0, 0, 1, 0), vF = arrow(s, 'p', 0, 0, 1, 0);
   const res = el('line', { class: 'resid' }, s);
-  const lS = rich(s, 0, 0, [['Ŝ', ''], ['nl,tab', 'sub']], 'lbl'), lA = rich(s, 0, 0, [['Φ̂', ''], ['1', 'sub']], 'lbl'), lB = rich(s, 0, 0, [['Φ̂', ''], ['2', 'sub']], 'lbl'), lF = text(s, 0, 0, 'fit', 'lbs');
+  const lS = rich(s, 0, 0, [['Ŝ', ''], ['nl,tab', 'sub']], 'lbl'), lA = rich(s, 0, 0, [['Φ̂', ''], ['1', 'sub']], 'lbl'), lB = rich(s, 0, 0, [['Φ̂', ''], ['2', 'sub']], 'lbl'), lF = text(s, 0, 0, 'fit', 'lbs', 'end');
   el('line', { x1: 0, y1: PH + 2, x2: W, y2: PH + 2, class: 'ax2' }, s);
   const rd = [0, 1, 2, 3].map(k => text(s, 16, PH + 26 + k * 22, '', 'mth'));
   const f2 = v => v.toFixed(2);
@@ -1089,7 +1090,7 @@ function F12() {
       mv(res, pF[0], pF[1], pS[0], pS[1]); res.setAttribute('opacity', u >= 0.2 ? 1 : 0);
       const c = [m3(a3(m3(A, -0.15), m3(B, -0.15)), 1), a3(m3(A, 1.15), m3(B, -0.15)), a3(m3(A, 1.15), m3(B, 1.15)), a3(m3(A, -0.15), m3(B, 1.15))].map(pr);
       plane.setAttribute('d', 'M' + c.map(p => fx(p[0]) + ',' + fx(p[1])).join(' L') + ' Z'); plane.setAttribute('opacity', (0.9 * showB).toFixed(3));
-      setA(lS, { x: fx(pS[0] + 8), y: fx(pS[1] - 6) }); setA(lA, { x: fx(pA[0] + 8), y: fx(pA[1] + 14) }); setA(lB, { x: fx(pB[0] + 8), y: fx(pB[1] - 4) }); setA(lF, { x: fx(pF[0] + 8), y: fx(pF[1] + 14) });
+      setA(lS, { x: fx(pS[0] + 8), y: fx(pS[1] - 6) }); setA(lA, { x: fx(pA[0] + 8), y: fx(pA[1] + 14) }); setA(lB, { x: fx(pB[0] + 8), y: fx(pB[1] - 4) }); setA(lF, { x: fx(pF[0] - 10), y: fx(pF[1] - 8) });
       let keys, label;
       if (u < 0.1) { keys = ['b', 'M']; label = 'The normalized output Ŝnl,tab has unit length'; rd[0].textContent = `b₁ = ⟨Φ̂₁, Ŝ⟩ = ${f2(bA)}`; rd[1].textContent = `M₁₁ = ⟨Φ̂₁, Φ̂₁⟩ = ${f2(mAA)}`; rd[2].textContent = ''; rd[3].textContent = ''; }
       else if (u < 0.4) { keys = ['g', 'e2', 'res']; label = `K = 1, projection onto Φ̂₁ with e₂ = ${f2(e1)}`; rd[0].textContent = `b₁ = ${f2(bA)},  M₁₁ = ${f2(mAA)}`; rd[1].textContent = `g₁ = b₁/M₁₁ = ${f2(g1)}`; rd[2].textContent = `e₂ = 1 − b₁²/M₁₁ = ${f2(e1)}`; rd[3].textContent = ''; }
@@ -1118,9 +1119,9 @@ function F13() {
   }
   TOY_OFFS.forEach(([di, dj], k) => text(s, xq(3 * k) + 15, ybot + 42, `(${di},${dj})`, 'lbs', 'middle'));
   text(s, 50, ybot + 58, 'candidates by offset (Δi, Δj)', 'lbs');
-  const PX = k => 70 + (k - 1) * 62, PY0 = 418, PY1 = 300, py = e => PY0 - (PY0 - PY1) * lg(e);
+  const PX = k => 70 + (k - 1) * 62, PY0 = 418, PY1 = 308, py = e => PY0 - (PY0 - PY1) * lg(e);
   el('line', { x1: 0, y1: 276, x2: W, y2: 276, class: 'ax2' }, s);
-  rich(s, 8, 292, [['ē', ''], ['2', 'sub'], [' of the retained set', '']], 'lbs');
+  rich(s, 8, 291, [['ē', ''], ['2', 'sub'], [' of the retained set', '']], 'lbs');
   [1, 0.1, 0.01].forEach(e => { el('line', { x1: 56, y1: fx(py(e)), x2: 400, y2: fx(py(e)), class: 'ax' }, s); text(s, 52, py(e) + 4, String(e), 'lbs', 'end'); });
   for (let k = 1; k <= 6; k++) text(s, PX(k), PY0 + 18, 'K = ' + k, 'lbs', 'middle');
   const pl = el('path', { class: 'pathline', d: 'M0,0' }, s), pts = [];
@@ -1146,8 +1147,8 @@ function F13() {
       pl.setAttribute('d', nPts >= 2 ? 'M' + pts.slice(0, nPts).map((p, k) => fx(PX(k + 1)) + ',' + fx(py(path[k].e))).join(' L') : 'M0,0');
       if (K === 0) return { keys: [], label: 'The search starts from the empty set, where ē₂ = 1' };
       const r = TOYROWS[chosen];
-      if (tau < 0.45) return { keys: ['un'], label: `Step ${K}: ē₂ of every candidate added to the ${K - 1} retained configuration${K - 1 === 1 ? '' : 's'}` };
-      return { keys: ['arg', 'un'], label: `Step ${K}: a configuration at offset (${r.di}, ${r.dj}) gives the smallest ē₂ = ${path[K - 1].e.toFixed(3)}` };
+      if (tau < 0.45) return { keys: ['un'], label: `K = ${K}, ē₂ of each candidate added to the retained set` };
+      return { keys: ['arg', 'un'], label: `K = ${K}, a configuration at offset (${r.di}, ${r.dj}) gives the smallest ē₂ = ${path[K - 1].e.toFixed(3)}` };
     }
   };
 }
@@ -1211,6 +1212,10 @@ function F14() {
   const tw = text(s, 14, PH + 26, 'WRT   592 configurations, 1,184 rows, 54 offsets', 'lbb');
   const ts = text(s, 14, PH + 48, 'SWRT   36 configurations, 72 rows, 18 offsets', 'lbb');
   const order = D.offs.slice().sort((a, b) => (a.di - b.di) || (a.dj - b.dj));
+  const inFrame = p => p[0] >= -0.25 && p[0] <= 0.65 && p[1] >= -0.25 && p[1] <= 0.55;
+  let nOut = 0, kOut = 0;
+  D.offs.forEach(o => o.pts.forEach((p, i) => { if (!inFrame(p)) { nOut++; if (o.keep[i]) kOut++; } }));
+  const beyond = n => n ? ` (${n} ends of k₂ beyond the frame)` : '';
   let lastKey = '';
   return {
     dur: 14000, rest: 0.8,
@@ -1234,9 +1239,9 @@ function F14() {
       }
       if (u < 0.08) return { keys: ['tab'], label: 'Loci and k₃ of the 29 offsets with Δj ≥ 0' };
       if (u < 0.38) return { keys: ['tab'], label: `WRT, ${this._n} of 592 configurations` };
-      if (u < 0.5) return { keys: ['tab'], label: 'WRT, 592 configurations on 54 offsets' };
+      if (u < 0.5) return { keys: ['tab'], label: 'WRT, 592 configurations on 54 offsets' + beyond(nOut) };
       if (u < 0.66) return { keys: ['K'], label: 'SWRT keeps 36 of the 592 configurations' };
-      return { keys: ['K'], label: 'SWRT, 36 configurations on 18 offsets' };
+      return { keys: ['K'], label: 'SWRT, 36 configurations on 18 offsets' + beyond(kOut) };
     }
   };
 }
