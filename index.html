@@ -194,7 +194,7 @@ figcaption b{font-weight:700}
   <figcaption><b>Animation S9.</b> Weighted sum of Eq. (8) for the 36 retained configurations of SWRT and their gains, strongest first, for the JONSWAP spectrum of Fig. 4. The top row shows the four strongest responses <span class="m">g</span>Φ<sub><span class="m">q</span></sub>, and the sum approaches <span class="m">S</span><sub>nl,tab</sub> of the full table. Red is positive and blue negative.</figcaption>
 </figure>
 
-<h2>3b. Greedy selection and least-squares coefficients</h2>
+<h2>3b. Selection of configurations and coefficients</h2>
 
 <figure class="anim" id="step-f12">
   <div class="eq"><div class="eqm"><math display="block"><mrow class="hl" data-k="e2"><msub><mover accent="true"><mi>e</mi><mo>¯</mo></mover><mn>2</mn></msub><mo>=</mo><mfrac><mn>1</mn><mi>P</mi></mfrac><munderover><mo>∑</mo><mrow><mi>p</mi><mo>=</mo><mn>1</mn></mrow><mi>P</mi></munderover><msub><mi>e</mi><mn>2</mn></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo></mrow><mo>,</mo><mspace width="1em"></mspace><msub><mi>e</mi><mn>2</mn></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>=</mo><mfrac><mrow class="hl" data-k="res"><msup><mrow><mo>‖</mo><munder><mo>∑</mo><mrow><mi>q</mi><mo>∈</mo><msub><mi>𝒬</mi><mi>K</mi></msub></mrow></munder><msub><mi>g</mi><mi>q</mi></msub><msub><mi mathvariant="normal">Φ</mi><mi>q</mi></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>−</mo><msub><mi>S</mi><mrow><mi>nl</mi><mo>,</mo><mi>tab</mi></mrow></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>‖</mo></mrow><mn>2</mn></msup></mrow><msup><mrow><mo>‖</mo><msub><mi>S</mi><mrow><mi>nl</mi><mo>,</mo><mi>tab</mi></mrow></msub><mo stretchy="false">(</mo><msub><mi>E</mi><mi>p</mi></msub><mo stretchy="false">)</mo><mo>‖</mo></mrow><mn>2</mn></msup></mfrac></math></div><span class="eqn">(9)</span></div>
@@ -210,7 +210,7 @@ figcaption b{font-weight:700}
   <figcaption><b>Animation S11.</b> The first six steps of the greedy selection of Eq. (12) on the table of the paper, with <span class="m">ē</span><sub>2</sub> over the 15,000 training spectra of each candidate added to the retained set (bars) and <span class="m">ē</span><sub>2</sub> of the retained set (curve). The bars show the configurations of the five offsets the six steps retain from, and … marks the other offsets of the table. The search with swaps and restarts ends at the 36 configurations of SWRT, with <span class="m">ē</span><sub>2</sub> = 0.003.</figcaption>
 </figure>
 
-<h2>3e. The retained configurations</h2>
+<h2>3d. The retained configurations</h2>
 
 <figure class="anim" id="step-f14">
   <div class="eq"><div class="eqm"><math display="block"><mrow class="hl" data-k="tab"><msub><mi>S</mi><mrow><mi>nl</mi><mo>,</mo><mi>tab</mi></mrow></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><mn>592</mn></munderover><msub><mi mathvariant="normal">Φ</mi><mi>q</mi></msub></mrow><mo>,</mo><mspace width="1.4em"></mspace><mrow class="hl" data-k="K"><msub><mi>S</mi><mrow><mi>nl</mi><mo>,</mo><mi>K</mi></mrow></msub><mo>=</mo><munder><mo>∑</mo><mrow><mi>q</mi><mo>∈</mo><msub><mi>𝒬</mi><mi>K</mi></msub></mrow></munder><msub><mi>g</mi><mi>q</mi></msub><msub><mi mathvariant="normal">Φ</mi><mi>q</mi></msub><mo>,</mo><mspace width="0.5em"></mspace><mi>K</mi><mo>=</mo><mn>36</mn></mrow></math></div><span class="eqn">(8)</span></div>
