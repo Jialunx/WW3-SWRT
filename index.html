@@ -157,7 +157,7 @@ figcaption b{font-weight:700}
 <figure class="anim" id="step-f5">
   <div class="eq"><div class="eqm"><math display="block"><mi>T</mi><mo stretchy="false">(</mo><msub><mi>𝐤</mi><mn>1</mn></msub><mo>,</mo><msub><mi>𝐤</mi><mn>3</mn></msub><mo stretchy="false">)</mo><mo>≈</mo><mn>2</mn><mrow class="hl" data-k="sum"><munder><mo>∑</mo><mi>m</mi></munder></mrow><mrow class="hl" data-k="w"><msub><mi>w</mi><mi>m</mi></msub></mrow><mspace width="0.17em"></mspace><mrow class="hl" data-k="Nm"><msub><mi>N</mi><mn>1234</mn></msub><mo stretchy="false">(</mo><mi>m</mi><mo stretchy="false">)</mo></mrow><mo>,</mo><mspace width="1.2em"></mspace><mrow class="hl" data-k="w"><msub><mi>w</mi><mi>m</mi></msub><mo>=</mo><msub><mi>G</mi><mi>m</mi></msub><msub><mi>J</mi><mi>m</mi></msub></mrow><mspace width="0.17em"></mspace><mrow class="hl" data-k="w ds"><mi mathvariant="normal">Δ</mi><msub><mi>s</mi><mi>m</mi></msub></mrow></math></div><span class="eqn">(5)</span></div>
   <div class="plot" id="f5"></div>
-  <figcaption><b>Animation S4.</b> Discretization of Eq. (5). Points equidistant in <span class="m">s</span> are placed along the locus and the points with <span class="m">H</span> = 0 are removed. At each kept point <span class="m">n</span><sub>2</sub> and <span class="m">n</span><sub>4</sub> are interpolated from the four surrounding grid points, and the bars give <span class="m">n</span><sub>1</sub> to <span class="m">n</span><sub>4</sub> and <span class="m">N</span><sub>1234</sub>(<span class="m">m</span>) for a JONSWAP spectrum with its peak at 0.2 Hz.</figcaption>
+  <figcaption><b>Animation S4.</b> Discretization of Eq. (5). Points equidistant in <span class="m">s</span> are placed along the locus and the points with <span class="m">H</span> = 0 are removed. At each kept point <span class="m">n</span><sub>2</sub> and <span class="m">n</span><sub>4</sub> are interpolated from the four surrounding grid points, and the bars give <span class="m">n</span><sub>1</sub> to <span class="m">n</span><sub>4</sub> and <span class="m">N</span><sub>1234</sub>(<span class="m">m</span>) for a JONSWAP spectrum with its peak at 0.3 Hz and its mean direction at 60° from <span class="v">k</span><sub>1</sub>.</figcaption>
 </figure>
 
 <figure class="anim" id="step-f6">
@@ -666,7 +666,7 @@ function F5() {
   const nL = L13.pts.length; let ist = 0;
   for (let i = 0; i < nL; i++) if (!keepH(L13.pts[(i - 1 + nL) % nL], K3, PP) && keepH(L13.pts[i], K3, PP)) { ist = i; break; }
   const sst = A13.cum[ist], MALL = 30;
-  const nsp = nGrid([{ fp: 0.2, gam: 3.3, s2: 20, th0: 0, a: 1 }]);
+  const nsp = nGrid([{ fp: 0.3, gam: 3.3, s2: 6, th0: 60, a: 1 }]);   // energy at all four wavenumbers along the locus (s4_spectra.py)
   const n1 = nsp[19][0], n3 = nsp[21][2];
   const pts = [];
   for (let q = 0; q < MALL; q++) { const p = A13.at((sst + (q + 0.5) * A13.L / MALL) % A13.L); pts.push({ p, h: keepH(p, K3, PP) }); }
@@ -688,7 +688,7 @@ function F5() {
   for (let q = 0; q < 8; q++) { lines.push(el('line', { class: 'thin' }, cur)); nds.push(el('circle', { r: 3.4, class: 'node' }, cur)); }
   const rg2 = el('circle', { r: 5.5, class: 'ring' }, cur), rg4 = el('circle', { r: 5.5, class: 'ring dashed' }, cur);
   el('line', { x1: 0, y1: PH + 2, x2: W, y2: PH + 2, class: 'ax2' }, s);
-  text(s, 14, PH + 22, 'n₁ to n₄ and N₁₂₃₄(m), JONSWAP peak at 0.2 Hz', 'lbs');
+  text(s, 14, PH + 22, 'n₁ to n₄ and N₁₂₃₄(m), JONSWAP peak at 0.3 Hz toward 60°', 'lbs');
   const mt = text(s, W - 14, PH + 44, '', 'lbb', 'end');
   const BY = PH + 104, BH = 62, bx = [40, 104, 168, 232], cls = ['tint1', 'tint2', 'tint3', 'tint4'], nm = ['n₁', 'n₂', 'n₃', 'n₄'];
   el('line', { x1: 30, y1: BY, x2: 270, y2: BY, class: 'ax2' }, s);
