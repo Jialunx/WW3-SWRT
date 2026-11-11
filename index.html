@@ -157,7 +157,7 @@ figcaption b{font-weight:700}
 <figure class="anim" id="step-f5">
   <div class="eq"><div class="eqm"><math display="block"><mi>T</mi><mo stretchy="false">(</mo><msub><mi>𝐤</mi><mn>1</mn></msub><mo>,</mo><msub><mi>𝐤</mi><mn>3</mn></msub><mo stretchy="false">)</mo><mo>≈</mo><mn>2</mn><mrow class="hl" data-k="sum"><munder><mo>∑</mo><mi>m</mi></munder></mrow><mrow class="hl" data-k="w"><msub><mi>w</mi><mi>m</mi></msub></mrow><mspace width="0.17em"></mspace><mrow class="hl" data-k="Nm"><msub><mi>N</mi><mn>1234</mn></msub><mo stretchy="false">(</mo><mi>m</mi><mo stretchy="false">)</mo></mrow><mo>,</mo><mspace width="1.2em"></mspace><mrow class="hl" data-k="w"><msub><mi>w</mi><mi>m</mi></msub><mo>=</mo><msub><mi>G</mi><mi>m</mi></msub><msub><mi>J</mi><mi>m</mi></msub></mrow><mspace width="0.17em"></mspace><mrow class="hl" data-k="w ds"><mi mathvariant="normal">Δ</mi><msub><mi>s</mi><mi>m</mi></msub></mrow></math></div><span class="eqn">(5)</span></div>
   <div class="plot" id="f5"></div>
-  <figcaption><b>Animation S4.</b> Discretization of Eq. (5). Points equidistant in <span class="m">s</span> are placed along the locus and the points with <span class="m">H</span> = 0 are removed. At each kept point <span class="m">n</span><sub>2</sub> and <span class="m">n</span><sub>4</sub> are interpolated from the four surrounding grid points, and the bars give <span class="m">n</span><sub>1</sub> to <span class="m">n</span><sub>4</sub> and <span class="m">N</span><sub>1234</sub>(<span class="m">m</span>) for a JONSWAP spectrum with its peak at 0.3 Hz and its mean direction at 60° from <span class="v">k</span><sub>1</sub>.</figcaption>
+  <figcaption><b>Animation S4.</b> Discretization of Eq. (5). Points equidistant in <span class="m">s</span> are placed along the locus and the points with <span class="m">H</span> = 0 are removed. At each kept point <span class="m">n</span><sub>2</sub> and <span class="m">n</span><sub>4</sub> are interpolated from the four surrounding grid points, and the bars give <span class="m">n</span><sub>1</sub> to <span class="m">n</span><sub>4</sub> and <span class="m">N</span><sub>1234</sub>(<span class="m">m</span>) for a JONSWAP spectrum with its peak at 0.3 Hz and its mean direction at 60° from <span class="v">k</span><sub>1</sub>. The values <span class="m">n</span><sub>1</sub> and <span class="m">n</span><sub>3</sub> are the same at every point, and the last part shows <span class="m">N</span><sub>1234</sub>(<span class="m">m</span>) at all kept points, which Eq. (5) adds with the weights <span class="m">w</span><sub><span class="m">m</span></sub>.</figcaption>
 </figure>
 
 <figure class="anim" id="step-f6">
@@ -691,12 +691,17 @@ function F5() {
   text(s, 14, PH + 22, 'n₁ to n₄ and N₁₂₃₄(m), JONSWAP peak at 0.3 Hz toward 60°', 'lbs');
   const mt = text(s, W - 14, PH + 44, '', 'lbb', 'end');
   const BY = PH + 104, BH = 62, bx = [40, 104, 168, 232], cls = ['tint1', 'tint2', 'tint3', 'tint4'], nm = ['n₁', 'n₂', 'n₃', 'n₄'];
-  el('line', { x1: 30, y1: BY, x2: 270, y2: BY, class: 'ax2' }, s);
-  const bars = bx.map((x, q) => { text(s, x + 14, BY + 18, nm[q], 'lbl', 'middle'); return el('rect', { x, y: BY, width: 28, height: 0, class: cls[q] }, s); });
+  const gB = grp(s, {}), gS = grp(s, { opacity: 0 });   // the bars of one point m, and N1234 at every kept point
+  el('line', { x1: 30, y1: BY, x2: 270, y2: BY, class: 'ax2' }, gB);
+  const bars = bx.map((x, q) => { text(gB, x + 14, BY + 18, nm[q], 'lbl', 'middle'); return el('rect', { x, y: BY, width: 28, height: 0, class: cls[q] }, gB); });
   const NX = 330, NY = BY - BH / 2;
-  el('line', { x1: NX - 10, y1: NY, x2: NX + 38, y2: NY, class: 'ax2' }, s);
-  const nb = el('rect', { x: NX, y: NY, width: 28, height: 0, class: 'tinta' }, s);
-  rich(s, NX + 14, BY + 18, [['N', ''], ['1234', 'sub'], ['(m)', '']], 'lbl', 'middle');
+  el('line', { x1: NX - 10, y1: NY, x2: NX + 38, y2: NY, class: 'ax2' }, gB);
+  const nb = el('rect', { x: NX, y: NY, width: 28, height: 0, class: 'tinta' }, gB);
+  rich(gB, NX + 14, BY + 18, [['N', ''], ['1234', 'sub'], ['(m)', '']], 'lbl', 'middle');
+  const SX0 = 40, SX1 = 390, sw = (SX1 - SX0) / kept.length;
+  el('line', { x1: SX0 - 6, y1: NY, x2: SX1 + 6, y2: NY, class: 'ax2' }, gS);
+  kept.forEach((o, q) => { const v = o.N / Nmax, hh = Math.min(1, Math.abs(v)) * BH / 2; el('rect', { x: fx(SX0 + q * sw + 1), y: fx(v >= 0 ? NY - hh : NY), width: fx(Math.max(1, sw - 2)), height: fx(hh), class: 'tinta' }, gS); });
+  rich(gS, (SX0 + SX1) / 2, BY + 18, [['N', ''], ['1234', 'sub'], [`(m) at the ${kept.length} kept points, m = 1 to ${kept.length}`, '']], 'lbs', 'middle');
   function bar(r, v) { const h = Math.max(0, Math.min(1, v)) * BH; setA(r, { y: fx(BY - h), height: fx(h) }); }
   return {
     dur: 16000, rest: 0.6,
@@ -705,10 +710,11 @@ function F5() {
       if (u < 0.22) { cnt = Math.ceil(seg(u, 0.01, 0.21) * MALL); fade = 0; keys = ['ds']; label = 'Points equidistant in arc length along the k₂ locus'; }
       else if (u < 0.3) { fade = seg(u, 0.22, 0.29); keys = ['sum']; label = 'The sum leaves out the points with H = 0'; }
       else if (u < 0.95) { m = Math.min(kept.length - 1, Math.floor(seg(u, 0.3, 0.95) * kept.length)); keys = ['w', 'Nm']; label = `Point m = ${m + 1}, with n₂ and n₄ interpolated from the four grid points around k₂ and k₄`; }
-      else { keys = ['sum']; label = 'Each kept point is one quadruplet with one weight wₘ'; }
+      else { keys = ['sum']; label = 'N₁₂₃₄(m) at every kept point, added with the weights wₘ'; }
       dots.forEach((d, q) => d.setAttribute('opacity', q >= cnt ? 0 : (pts[q].h ? 1 : 1 - 0.85 * fade)));
       cur.setAttribute('opacity', m >= 0 ? 1 : 0);
-      bar(bars[0], n1 / nmax); bar(bars[2], n3 / nmax);
+      const fin = u >= 0.95; gB.setAttribute('opacity', fin ? 0 : 1); gS.setAttribute('opacity', fin ? 1 : 0);
+      bar(bars[0], m >= 0 ? n1 / nmax : 0); bar(bars[2], m >= 0 ? n3 / nmax : 0);   // n1 and n3 are the same at every point m
       if (m >= 0) {
         const o = kept[m], X2 = F.X(o.k2[0]), Y2 = F.Y(o.k2[1]), X4 = F.X(o.k4[0]), Y4 = F.Y(o.k4[1]);
         mv(a2, ox, oy, X2, Y2); mv(a4, ox, oy, X4, Y4);
