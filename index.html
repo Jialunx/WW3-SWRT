@@ -60,8 +60,6 @@ figcaption{font-size:.95rem;line-height:1.45;margin:8px 0 0}
 figcaption b{font-weight:700}
 .v{font-weight:700}
 .m{font-style:italic}
-footer{margin-top:36px;font-size:.92rem;color:var(--muted)}
-footer p{margin:0 0 8px}
 /* figure classes */
 .ax{stroke:var(--grid);stroke-width:1;fill:none}
 .ax2{stroke:var(--line);stroke-width:1;fill:none}
@@ -110,7 +108,7 @@ footer p{margin:0 0 8px}
 .sec3{fill:var(--k3);stroke:var(--k3);stroke-width:1.2}
 .packet{fill:var(--k3)}
 .pulse{fill:var(--accent);fill-opacity:.25;stroke:var(--accent);stroke-width:1}
-.cp{fill:var(--pos)} .cn{fill:var(--neg)} .cr{fill:var(--k1)} .cb{fill:var(--k3)}
+.cp{fill:var(--k1)} .cn{fill:var(--k3)}
 .panelbox{fill:none;stroke:var(--line);stroke-width:1}
 .plane{fill:var(--band);stroke:var(--line);stroke-width:1}
 .resid{stroke:var(--k1);stroke-width:2;stroke-dasharray:5 4}
@@ -179,7 +177,7 @@ footer p{margin:0 0 8px}
 <figure class="anim" id="step-f9">
   <div class="eq"><div class="eqm"><math display="block"><mrow class="hl" data-k="n24"><msub><mi>n</mi><mn>2</mn></msub><mo>=</mo><mi>n</mi><mo stretchy="false">(</mo><msub><mi>i</mi><mn>1</mn></msub><mo>+</mo><mi mathvariant="normal">Δ</mi><msub><mi>i</mi><mn>2</mn></msub><mo>,</mo><msub><mi>j</mi><mn>1</mn></msub><mo>+</mo><mi mathvariant="normal">Δ</mi><msub><mi>j</mi><mn>2</mn></msub><mo stretchy="false">)</mo><mo>,</mo><mspace width="0.8em"></mspace><msub><mi>n</mi><mn>4</mn></msub><mo>=</mo><mi>n</mi><mo stretchy="false">(</mo><msub><mi>i</mi><mn>1</mn></msub><mo>+</mo><mi mathvariant="normal">Δ</mi><msub><mi>i</mi><mn>4</mn></msub><mo>,</mo><msub><mi>j</mi><mn>1</mn></msub><mo>+</mo><mi mathvariant="normal">Δ</mi><msub><mi>j</mi><mn>4</mn></msub><mo stretchy="false">)</mo></mrow></math></div><span class="eqn"></span></div>
   <div class="plot" id="f9"></div>
-  <figcaption><b>Animation S7.</b> The row of configuration 316 used as a stencil. At each anchor bin the row reads <span class="m">n</span><sub>1</sub> and <span class="m">n</span><sub>3</sub> in the bins of <span class="v">k</span><sub>1</sub> and <span class="v">k</span><sub>3</sub> and interpolates <span class="m">n</span><sub>2</sub> and <span class="m">n</span><sub>4</sub> in the dashed boxes. The colors add up its deposits with its stored weights for the JONSWAP spectrum of Fig. 4 of the paper.</figcaption>
+  <figcaption><b>Animation S7.</b> The row of configuration 316 used as a stencil. At each anchor bin the row reads <span class="m">n</span><sub>1</sub> and <span class="m">n</span><sub>3</sub> in the bins of <span class="v">k</span><sub>1</sub> and <span class="v">k</span><sub>3</sub> and interpolates <span class="m">n</span><sub>2</sub> and <span class="m">n</span><sub>4</sub> in the dashed boxes. The colors add up its deposits with its stored weights for the JONSWAP spectrum of Fig. 4 of the paper. Red is positive and blue negative.</figcaption>
 </figure>
 
 <h2>3a. From the table to SWRT</h2>
@@ -220,10 +218,6 @@ footer p{margin:0 0 8px}
   <figcaption><b>Animation S12.</b> Quadruplets of WRT and SWRT with one row of each configuration and without the mirror images, as in Fig. 2 of the paper. Orange dots mark the ends of <span class="v">k</span><sub>2</sub> and blue plus signs those of <span class="v">k</span><sub>3</sub>, and gray lines are the loci of their offsets. WRT has 592 configurations (1,184 rows) on 54 offsets, of which SWRT retains 36 (72 rows) on 18 offsets.</figcaption>
 </figure>
 
-<footer>
-  <p>Animations S7 and S9–S11 use the table, the SWRT operator and the training spectra of the paper.</p>
-  <p>The WRT points of Animation S12 follow the point placement of Xnl and give the 1,184 rows of the table, and the SWRT points are the rows of the operator file of WW3-SWRT.</p>
-</footer>
 </div>
 
 <script>
@@ -975,9 +969,9 @@ function F11() {
   const I0 = 7, I1 = 26, NR = I1 - I0 + 1, C0 = -7, C1 = 7, NC = C1 - C0 + 1;
   function panel(x, y, w, h) {
     const cw = w / NC, ch = h / NR, cells = [];
-    for (let i = I0; i <= I1; i++) for (let c = C0; c <= C1; c++) cells.push(el('rect', { x: fx(x + (c - C0) * cw), y: fx(y + (I1 - i) * ch), width: (cw + 0.3).toFixed(2), height: (ch + 0.3).toFixed(2), class: 'cr', 'fill-opacity': 0 }, s));
+    for (let i = I0; i <= I1; i++) for (let c = C0; c <= C1; c++) cells.push(el('rect', { x: fx(x + (c - C0) * cw), y: fx(y + (I1 - i) * ch), width: (cw + 0.3).toFixed(2), height: (ch + 0.3).toFixed(2), class: 'cp', 'fill-opacity': 0 }, s));
     el('rect', { x, y, width: w, height: h, class: 'panelbox' }, s);
-    return { set(field, vmax) { let q = 0; for (let i = I0; i <= I1; i++) for (let c = C0; c <= C1; c++) { const v = field[(i - 1) * ND + (c + ND) % ND], m = Math.sqrt(Math.abs(v) / vmax), e = cells[q++]; e.setAttribute('class', v >= 0 ? 'cr' : 'cb'); e.setAttribute('fill-opacity', m < 0.03 ? 0 : Math.min(1, m).toFixed(2)); } } };
+    return { set(field, vmax) { let q = 0; for (let i = I0; i <= I1; i++) for (let c = C0; c <= C1; c++) { const v = field[(i - 1) * ND + (c + ND) % ND], m = Math.sqrt(Math.abs(v) / vmax), e = cells[q++]; e.setAttribute('class', v >= 0 ? 'cp' : 'cn'); e.setAttribute('fill-opacity', m < 0.03 ? 0 : Math.min(1, m).toFixed(2)); } } };
   }
   const maxAbs = fl => { let m = 0; for (let i = I0; i <= I1; i++) for (let c = C0; c <= C1; c++) m = Math.max(m, Math.abs(fl[(i - 1) * ND + (c + ND) % ND])); return m || 1; };
   const gu = SUPP.PATH.g_unit, units = gu.map((_, q) => q);   // the 36 configurations of the operator (rows 2q, 2q + 1)
