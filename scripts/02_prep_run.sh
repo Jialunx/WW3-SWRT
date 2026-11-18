@@ -1,7 +1,6 @@
 #!/bin/bash
 # Run directory for the 14-day global run (1-15 Jan 2025) with SWRT36 (default) or another operator (first argument, e.g.
 # inputs/swrt9.ww3op for SWRT9), WAM depth scaling, semi-implicit integration with a time step of 15-900 s.
-# Run ww3_shel with WW3_SWRT_TOPM=2 WW3_SWRT_TOPM_UST=1 (the weak-wind rule of the paper), see README.md.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 PKG="$PWD"; OP="$(realpath "${1:-inputs/swrt_K36.ww3op}")"; T="$(basename "${OP%.ww3op}")"; RUN="$PKG/run_${T}_global_14day"

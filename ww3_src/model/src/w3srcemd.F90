@@ -688,7 +688,7 @@ CONTAINS
     ! SWRT (NL6) only: WW3_SWRT_TOPM = m > 0 raises the diagonal term of the m highest prognostic frequencies
     ! to -|VS|/DAMAX, so that these frequencies do not limit DT and the semi-implicit update keeps |dE| below
     ! DAMAX. WW3_SWRT_TOPM_UST = 1 applies this only where ST4 sets the highest prognostic frequency from u*
-    ! (weak wind). The paper uses m = 2 with WW3_SWRT_TOPM_UST = 1. Default: off.
+    ! (weak wind). Default, as in the paper: m = 2 with WW3_SWRT_TOPM_UST = 1; WW3_SWRT_TOPM = 0 switches it off.
     INTEGER, SAVE :: SWTOPM = -1, SWTUST = 0
     LOGICAL :: SWTON
     CHARACTER(LEN=16) :: SWTVAL
@@ -1467,7 +1467,8 @@ CONTAINS
         DAMAX = MIN ( DAM(IS) , MAX ( XREL*SPECINIT(IS) , AFILT ) )
 #ifdef W3_NL6
         IF ( SWTOPM .LT. 0 ) THEN
-          SWTOPM = 0
+          SWTOPM = 2
+          SWTUST = 1
           CALL GET_ENVIRONMENT_VARIABLE ( 'WW3_SWRT_TOPM', SWTVAL, SWTLEN, SWTERR )
           IF ( SWTERR.EQ.0 .AND. SWTLEN.GT.0 ) READ (SWTVAL,*) SWTOPM
           ! WW3_SWRT_TOPM_UST = 1: only where the ST4 cut-off is set by FXPM/u* (weak wind), not by FXFM*fmean

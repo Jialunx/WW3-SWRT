@@ -17,7 +17,6 @@ D="$HERE/run_${S}_${TAG}"
 rm -rf "$D"; mkdir -p "$D"; cp "$HERE/$S"/* "$D"/
 cd "$D"
 export WW3_SWRT_OPERATOR="$OP" OMP_NUM_THREADS=1
-export WW3_SWRT_TOPM="${WW3_SWRT_TOPM:-2}" WW3_SWRT_TOPM_UST="${WW3_SWRT_TOPM_UST:-1}"   # weak-wind rule of the paper (NL6 only)
 "$B/ww3_grid" > grid.log
 "$B/ww3_strt" > strt.log
 "$B/ww3_shel" > shel.log

@@ -38,7 +38,7 @@ bash single_point/run.sh g20 build_nl6/bin inputs/swrt9.ww3op                 # 
 bash single_point/run.sh g20 build_nl6/bin path/to/other.ww3op                # SWRT with another operator
 ```
 
-`run.sh` sets the weak-wind rule of the paper (`WW3_SWRT_TOPM=2 WW3_SWRT_TOPM_UST=1`) unless these variables are already set; it acts only in NL6 builds. Each run has its own directory, `single_point/run_<scenario>_<build directory>`, with the operator name added for an operator given explicitly. The file `ww3.202501_src.nc` there holds the spectrum and the source terms every 30 min. The test spectra of the paper are spectra of the runs with WRT.
+SWRT applies the weak-wind rule of the paper by default (`WW3_SWRT_TOPM=0` switches it off). Each run has its own directory, `single_point/run_<scenario>_<build directory>`, with the operator name added for an operator given explicitly. The file `ww3.202501_src.nc` there holds the spectrum and the source terms every 30 min. The test spectra of the paper are spectra of the runs with WRT.
 
 ## Check
 

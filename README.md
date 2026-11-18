@@ -9,7 +9,7 @@ SWRT retains K mirror-image pairs of configurations of the WRT integration space
 - the WAM depth scaling in finite depth, as Xnl applies it to WRT with `IQTYPE = 2` (the same function of kd as for DIA, `NL1`),
 - the diagonal term for implicit time stepping (set `WW3_SWRT_DIAG=0` to switch it off),
 - the semi-implicit integration of the source terms (`OFFSET = 1` in `w3srcemd.F90`) with a dynamic time step of 15–900 s, as in all simulations of the paper,
-- a weak-wind rule for the two highest prognostic frequencies (`WW3_SWRT_TOPM=2 WW3_SWRT_TOPM_UST=1`, used in all SWRT runs of the paper; off when not set): where ST4 sets the highest prognostic frequency from the friction velocity, the diagonal term of SWRT at the two highest prognostic frequencies is raised to the value at which the semi-implicit scheme keeps the change of the spectrum in one step below the allowed change, so that these two frequencies no longer limit the time step.
+- a weak-wind rule for the two highest prognostic frequencies (on by default, as in all SWRT runs of the paper; `WW3_SWRT_TOPM=0` switches it off): where ST4 sets the highest prognostic frequency from the friction velocity, the diagonal term of SWRT at the two highest prognostic frequencies is raised to the value at which the semi-implicit scheme keeps the change of the spectrum in one step below the allowed change, so that these two frequencies no longer limit the time step.
 
 The code of `w3snl6md.F90` and `w3srcemd.F90` is that of the paper's global simulation and timings; v1.3 corrects only comments in `w3snl6md.F90` (the compiled code is identical). Since v1.5, `w3srcemd.F90` integrates semi-implicitly and holds the weak-wind rule, as the paper's current simulations, and the minimum time step of the global simulation is 15 s (`namelists/ww3_grid.nml`); v1.4 integrated the global simulation explicitly with a minimum time step of 60 s.
 
@@ -48,8 +48,7 @@ bash scripts/01_build.sh        # CMake with -DSWITCH=switch; also builds build/
 bash scripts/02_prep_run.sh                 # creates the run directory with SWRT36
 bash scripts/02_prep_run.sh inputs/swrt9.ww3op   # ... or with SWRT9
 export WW3_SWRT_OPERATOR=/path/to/swrt_operator.ww3op   # default: swrt_operator.ww3op in the run directory
-export WW3_SWRT_TOPM=2 WW3_SWRT_TOPM_UST=1             # the weak-wind rule of the paper
-LD_PRELOAD=/path/to/build/ftz.so mpirun -n <N> -x WW3_SWRT_OPERATOR -x WW3_SWRT_TOPM -x WW3_SWRT_TOPM_UST /path/to/build/bin/ww3_shel   # LD_PRELOAD is optional
+LD_PRELOAD=/path/to/build/ftz.so mpirun -n <N> -x WW3_SWRT_OPERATOR /path/to/build/bin/ww3_shel   # LD_PRELOAD is optional
 ```
 
 ## License
