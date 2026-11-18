@@ -56,4 +56,4 @@ WAVEWATCH III is distributed under the GNU Lesser General Public License (see `L
 
 ## Reference
 
-Chen, J., T. A. A. Adcock, Q. Liu, R. Clark, and T. Tang: A new nonlinear four-wave interaction scheme for ocean wave models: Webb–Resio–Tracy accuracy near DIA cost. Manuscript in preparation.
+Chen, J., T. A. A. Adcock, Q. Liu, and T. Tang: A new nonlinear four-wave interaction scheme for ocean wave models: Webb–Resio–Tracy accuracy near DIA cost. Manuscript in preparation.
