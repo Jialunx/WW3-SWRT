@@ -66,7 +66,7 @@ MODULE W3SRCEMD
   !
   !/ ------------------------------------------------------------------- /
   !/
-  REAL, PARAMETER, PRIVATE:: OFFSET = 0.
+  REAL, PARAMETER, PRIVATE:: OFFSET = 1.
   !/
 CONTAINS
   !/ ------------------------------------------------------------------- /
@@ -685,6 +685,14 @@ CONTAINS
     !/ ------------------------------------------------------------------- /
     !/ Local parameters
     !/
+    ! SWRT (NL6) only: WW3_SWRT_TOPM = m > 0 raises the diagonal term of the m highest prognostic frequencies
+    ! to -|VS|/DAMAX, so that these frequencies do not limit DT and the semi-implicit update keeps |dE| below
+    ! DAMAX. WW3_SWRT_TOPM_UST = 1 applies this only where ST4 sets the highest prognostic frequency from u*
+    ! (weak wind). The paper uses m = 2 with WW3_SWRT_TOPM_UST = 1. Default: off.
+    INTEGER, SAVE :: SWTOPM = -1, SWTUST = 0
+    LOGICAL :: SWTON
+    CHARACTER(LEN=16) :: SWTVAL
+    INTEGER :: SWTLEN, SWTERR
     INTEGER :: IK, ITH, IS, IS0, NSTEPS, NKH, NKH1, &
          IKS1, IS1, NSPECH, IDT, IERR, ISP
     REAL :: DTTOT, FHIGH, DT, AFILT, DAMAX, AFAC, &
@@ -1457,6 +1465,23 @@ CONTAINS
         VD(IS) = VD(IS) + VDUO(IS)
 #endif
         DAMAX = MIN ( DAM(IS) , MAX ( XREL*SPECINIT(IS) , AFILT ) )
+#ifdef W3_NL6
+        IF ( SWTOPM .LT. 0 ) THEN
+          SWTOPM = 0
+          CALL GET_ENVIRONMENT_VARIABLE ( 'WW3_SWRT_TOPM', SWTVAL, SWTLEN, SWTERR )
+          IF ( SWTERR.EQ.0 .AND. SWTLEN.GT.0 ) READ (SWTVAL,*) SWTOPM
+          ! WW3_SWRT_TOPM_UST = 1: only where the ST4 cut-off is set by FXPM/u* (weak wind), not by FXFM*fmean
+          CALL GET_ENVIRONMENT_VARIABLE ( 'WW3_SWRT_TOPM_UST', SWTVAL, SWTLEN, SWTERR )
+          IF ( SWTERR.EQ.0 .AND. SWTLEN.GT.0 ) READ (SWTVAL,*) SWTUST
+        END IF
+        SWTON = SWTOPM .GT. 0
+#ifdef W3_ST4
+        IF ( SWTON .AND. SWTUST.EQ.1 ) SWTON = FFXPM/MAX(USTAR,1.E-6) .GT. FFXFM*MAX(FMEAN1,FMEANWS)
+#endif
+        IF ( SWTON ) THEN
+          IF ( (IS-1)/NTH+1 .GT. NKH1-SWTOPM ) VD(IS) = MIN ( VD(IS), -ABS(VS(IS))/DAMAX )
+        END IF
+#endif
         AFAC = 1. / MAX( 1.E-10 , ABS(VS(IS)/DAMAX) )
 #ifdef W3_NL5
         IF (NL5_SELECT .EQ. 1)  THEN

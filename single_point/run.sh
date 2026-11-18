@@ -3,7 +3,7 @@
 #   bash single_point/run.sh <scenario> <bin> [operator]
 #     <scenario>  g20, turn90, decay20, swell_cross, swell_opp or swell_wide
 #     <bin>       bin/ directory of a single-point build: NL6 (SWRT), NL2 (WRT) or NL1 (DIA) in the switch file
-#     [operator]  SWRT operator for an NL6 build (default: inputs/swrt_K36.ww3op)
+#     [operator]  SWRT operator for an NL6 build (default: inputs/swrt_K36.ww3op; inputs/swrt9.ww3op for SWRT9)
 # The run directory is single_point/run_<scenario>_<build directory>[_<operator>]. ww3_ounp writes the spectrum and
 # the source terms every 30 min to ww3.202501_src.nc there.
 set -euo pipefail
@@ -17,6 +17,7 @@ D="$HERE/run_${S}_${TAG}"
 rm -rf "$D"; mkdir -p "$D"; cp "$HERE/$S"/* "$D"/
 cd "$D"
 export WW3_SWRT_OPERATOR="$OP" OMP_NUM_THREADS=1
+export WW3_SWRT_TOPM="${WW3_SWRT_TOPM:-2}" WW3_SWRT_TOPM_UST="${WW3_SWRT_TOPM_UST:-1}"   # weak-wind rule of the paper (NL6 only)
 "$B/ww3_grid" > grid.log
 "$B/ww3_strt" > strt.log
 "$B/ww3_shel" > shel.log

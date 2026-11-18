@@ -2,15 +2,17 @@
 
 WAVEWATCH III (version 7.14) with the sparse Webb–Resio–Tracy (SWRT) source term for the nonlinear four-wave interaction, selected by the switch `NL6`.
 
-SWRT retains K mirror-image pairs of configurations of the WRT integration space, each with an optimized gain. The operator of the paper has K = 36 configurations, whose rows use 18 offsets of k3 from k1 (`inputs/swrt_K36.ww3op`). This version includes
+SWRT retains K mirror-image pairs of configurations of the WRT integration space, each with an optimized gain. The operator of the paper, SWRT36, has K = 36 configurations, whose rows use 18 offsets of k3 from k1 (`inputs/swrt_K36.ww3op`). The faster SWRT9 of the paper has K = 9 configurations on 11 offsets (`inputs/swrt9.ww3op`). This version includes
 
 - the kernel that groups the rows by resonance curve, used by default: the rows of one offset share N1 and N3, so that two sums per curve give the transfer and the diagonal term (set `WW3_SWRT_KERNEL=vector` for the vectorized row loop of v1.2, or `WW3_SWRT_KERNEL=reference` for the original loop),
 - S_nl at all frequencies of the grid, as with DIA and WRT (`NKLIM = 0` in `w3srcemd.F90`),
 - the WAM depth scaling in finite depth, as Xnl applies it to WRT with `IQTYPE = 2` (the same function of kd as for DIA, `NL1`),
 - the diagonal term for implicit time stepping (set `WW3_SWRT_DIAG=0` to switch it off),
+- the semi-implicit integration of the source terms (`OFFSET = 1` in `w3srcemd.F90`) with a dynamic time step of 15–900 s, as in all simulations of the paper,
+- a weak-wind rule for the two highest prognostic frequencies (`WW3_SWRT_TOPM=2 WW3_SWRT_TOPM_UST=1`, used in all SWRT runs of the paper; off when not set): where ST4 sets the highest prognostic frequency from the friction velocity, the diagonal term of SWRT at the two highest prognostic frequencies is raised to the value at which the semi-implicit scheme keeps the change of the spectrum in one step below the allowed change, so that these two frequencies no longer limit the time step,
 - an optional library, `inputs/ftz.c`, that flushes subnormal floating-point numbers to zero when it is preloaded.
 
-The code of `w3snl6md.F90` and `w3srcemd.F90` is that of the paper's global simulation and timings; v1.3 corrects only comments in `w3snl6md.F90` (the compiled code is identical).
+The code of `w3snl6md.F90` and `w3srcemd.F90` is that of the paper's global simulation and timings; v1.3 corrects only comments in `w3snl6md.F90` (the compiled code is identical). Since v1.5, `w3srcemd.F90` integrates semi-implicitly and holds the weak-wind rule, as the paper's current simulations, and the minimum time step of the global simulation is 15 s (`namelists/ww3_grid.nml`); v1.4 integrated the global simulation explicitly with a minimum time step of 60 s.
 
 ## Contents
 
@@ -18,7 +20,8 @@ The code of `w3snl6md.F90` and `w3srcemd.F90` is that of the paper's global simu
 |---|---|
 | `ww3_src/` | WAVEWATCH III source; SWRT is in `model/src/w3snl6md.F90` |
 | `switch` | WAVEWATCH III switches (`NL6` selects SWRT) |
-| `inputs/swrt_K36.ww3op` | SWRT operator of the paper, K = 36 |
+| `inputs/swrt_K36.ww3op` | SWRT operator of the paper, SWRT36 (K = 36) |
+| `inputs/swrt9.ww3op` | the faster operator of the paper, SWRT9 (K = 9 on 11 offsets) |
 | `inputs/hybrid/` | the three configuration sets of the hybrid in the paper's Discussion and the rule that assigns a spectrum to one of them (`inputs/hybrid/README.md`) |
 | `inputs/ftz.c` | flush-to-zero library for `LD_PRELOAD` |
 | `inputs/Global-real.depth`, `inputs/points.list` | bathymetry and output points of the 1° global simulation of the paper |
@@ -44,9 +47,11 @@ bash scripts/01_build.sh        # CMake with -DSWITCH=switch; also builds build/
 ## Run
 
 ```
-bash scripts/02_prep_run.sh     # creates the run directory
+bash scripts/02_prep_run.sh                 # creates the run directory with SWRT36
+bash scripts/02_prep_run.sh inputs/swrt9.ww3op   # ... or with SWRT9
 export WW3_SWRT_OPERATOR=/path/to/swrt_operator.ww3op   # default: swrt_operator.ww3op in the run directory
-LD_PRELOAD=/path/to/build/ftz.so mpirun -n <N> /path/to/build/bin/ww3_shel   # LD_PRELOAD is optional
+export WW3_SWRT_TOPM=2 WW3_SWRT_TOPM_UST=1             # the weak-wind rule of the paper
+LD_PRELOAD=/path/to/build/ftz.so mpirun -n <N> -x WW3_SWRT_OPERATOR -x WW3_SWRT_TOPM -x WW3_SWRT_TOPM_UST /path/to/build/bin/ww3_shel   # LD_PRELOAD is optional
 ```
 
 ## License
