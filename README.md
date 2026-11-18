@@ -21,7 +21,6 @@ The code of `w3snl6md.F90` and `w3srcemd.F90` is that of the paper's global simu
 | `switch` | WAVEWATCH III switches (`NL6` selects SWRT) |
 | `inputs/swrt_K36.ww3op` | SWRT operator of the paper, SWRT36 (K = 36) |
 | `inputs/swrt9.ww3op` | the faster operator of the paper, SWRT9 (K = 9 on 11 offsets) |
-| `inputs/hybrid/` | the three configuration sets of the hybrid in the paper's Discussion and the rule that assigns a spectrum to one of them (`inputs/hybrid/README.md`) |
 | `inputs/ftz.c` | flush-to-zero library for `LD_PRELOAD` |
 | `inputs/Global-real.depth`, `inputs/points.list` | bathymetry and output points of the 1° global simulation of the paper |
 | `namelists/` | namelists of the global simulation |
@@ -29,7 +28,7 @@ The code of `w3snl6md.F90` and `w3srcemd.F90` is that of the paper's global simu
 | `tools/` | scripts that make the SWRT operator for another spectral grid, with the search of the paper (`tools/README.md`) |
 | `single_point/` | setups of the six single-point simulations of the paper, with a patch for their build (`single_point/README.md`) |
 
-The operators of v1.2 (K = 30, and those for other K in `inputs/operators/`) came from an earlier selection and are not part of this version. They remain in the v1.2 archive. v1.4 changes only the hybrid: opposing seas are found from the f⁴-weighted directional distribution, and the sets for broad seas and opposing seas are those selected under this rule, as in the current version of the paper.
+The operators of v1.2 (K = 30, and those for other K in `inputs/operators/`) came from an earlier selection and are not part of this version. They remain in the v1.2 archive. The configuration sets of the hybrid (v1.3, v1.4) are not part of this version; they remain in the v1.4 archive.
 
 Two inputs of the global simulation are not included because of their size: the initial condition `restart_ic_20250101.ww3` (138 MB) and the ERA5 wind forcing `wind_1deg_global_20250101to15.nc` (351 MB, 1°, 1–15 January 2025). Prepare the wind file from ERA5 10-m winds, and provide an initial condition or start from rest, before running `scripts/02_prep_run.sh`.
 
