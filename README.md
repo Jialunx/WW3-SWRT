@@ -11,7 +11,6 @@ SWRT retains K mirror-image pairs of configurations of the WRT integration space
 - the semi-implicit integration of the source terms (`OFFSET = 1` in `w3srcemd.F90`) with a dynamic time step of 15–900 s, as in all simulations of the paper,
 - a weak-wind rule for the two highest prognostic frequencies (on by default, as in all SWRT runs of the paper; `WW3_SWRT_TOPM=0` switches it off): where ST4 sets the highest prognostic frequency from the friction velocity, the diagonal term of SWRT at the two highest prognostic frequencies is raised to the value at which the semi-implicit scheme keeps the change of the spectrum in one step below the allowed change, so that these two frequencies no longer limit the time step.
 
-The code of `w3snl6md.F90` and `w3srcemd.F90` is that of the paper's global simulation and timings; v1.3 corrects only comments in `w3snl6md.F90` (the compiled code is identical). Since v1.5, `w3srcemd.F90` integrates semi-implicitly and holds the weak-wind rule, as the paper's current simulations, and the minimum time step of the global simulation is 15 s (`namelists/ww3_grid.nml`); v1.4 integrated the global simulation explicitly with a minimum time step of 60 s.
 
 ## Contents
 
