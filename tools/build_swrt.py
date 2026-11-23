@@ -96,10 +96,11 @@ def limits(Ks, offsets=None, cost=None, line=None):
     return {K: min(L[K], 2 * K) for K in Ks}
 
 
-def search(G, b, yy, K, L, LOC, rng, starts=6, kicks=30):
+def search(G, b, yy, K, L, LOC, rng, starts=6, kicks=30, start=None):
     """K units whose rows use at most L offsets (LOC: offsets_of), as in the paper: greedy under the limit and swaps, then
     `starts` random sets within the limit and `kicks` random replacements of three to six units of the best set, each followed
-    by swaps. Returns the set with the smallest normalized residual e2 (sorted) and that e2."""
+    by swaps. Returns the set with the smallest normalized residual e2 (sorted) and that e2. With `start` (K units within the
+    limit), only that set improved by swaps (candidates.py)."""
     G, b = G / yy, b / yy; N = len(b)
     loci = lambda S: len(frozenset().union(*[LOC[u] for u in S])) if S else 0
     e2 = lambda S: float(1 - b[S] @ np.linalg.solve(G[np.ix_(S, S)], b[S]))
@@ -122,6 +123,8 @@ def search(G, b, yy, K, L, LOC, rng, starts=6, kicks=30):
                 if e2(rest + [q]) < e2(S) - 1e-12: S = rest + [q]
             if e2(S) >= best - 1e-12: return S
 
+    if start is not None:                                            # one given set, improved by swaps
+        S = swap(list(start)); return sorted(int(u) for u in S), e2(S)
     best = swap(greedy()); eb = e2(best)
     for _ in range(starts):                                          # random sets within the limit
         S = []

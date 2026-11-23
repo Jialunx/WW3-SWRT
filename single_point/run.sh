@@ -1,7 +1,8 @@
 #!/bin/bash
 # Run one single-point simulation of the paper (see README.md in this directory).
 #   bash single_point/run.sh <scenario> <bin> [operator]
-#     <scenario>  g20, turn90, decay20, swell_cross, swell_opp or swell_wide
+#     <scenario>  g20, turn90, decay20, swell_cross, swell_opp or swell_wide; or a training simulation (t_g12, t_g16,
+#                 t_g25, t_turn60, t_swell45, t_swell135)
 #     <bin>       bin/ directory of a single-point build: NL6 (SWRT), NL2 (WRT) or NL1 (DIA) in the switch file
 #     [operator]  SWRT operator for an NL6 build (default: inputs/swrt_K36.ww3op; inputs/swrt9.ww3op for SWRT9)
 # The run directory is single_point/run_<scenario>_<build directory>[_<operator>]. ww3_ounp writes the spectrum and

@@ -2,7 +2,7 @@
 
 WAVEWATCH III (version 7.14) with the sparse Webb–Resio–Tracy (SWRT) source term for the nonlinear four-wave interaction, selected by the switch `NL6`.
 
-SWRT retains K mirror-image pairs of configurations of the WRT integration space, each with an optimized gain. The operator of the paper, SWRT36, has K = 36 configurations, whose rows use 18 offsets of k3 from k1 (`inputs/swrt_K36.ww3op`). The faster SWRT9 of the paper has K = 9 configurations on 11 offsets (`inputs/swrt9.ww3op`). This version includes
+SWRT retains K configurations of the WRT integration space, each a quadruplet and its mirror image, and multiplies each by an optimized coefficient. The paper has two sets: SWRT36, with K = 36 configurations whose rows use 18 offsets of k3 from k1 (`inputs/swrt_K36.ww3op`), and the faster SWRT9, with K = 9 configurations on 11 offsets (`inputs/swrt9.ww3op`). This version includes
 
 - the kernel that groups the rows by resonance curve, used by default: the rows of one offset share N1 and N3, so that two sums per curve give the transfer and the diagonal term (set `WW3_SWRT_KERNEL=vector` for the vectorized row loop of v1.2, or `WW3_SWRT_KERNEL=reference` for the original loop),
 - S_nl at all frequencies of the grid, as with DIA and WRT (`NKLIM = 0` in `w3srcemd.F90`),
@@ -18,14 +18,14 @@ SWRT retains K mirror-image pairs of configurations of the WRT integration space
 |---|---|
 | `ww3_src/` | WAVEWATCH III source; SWRT is in `model/src/w3snl6md.F90` |
 | `switch` | WAVEWATCH III switches (`NL6` selects SWRT) |
-| `inputs/swrt_K36.ww3op` | SWRT operator of the paper, SWRT36 (K = 36) |
-| `inputs/swrt9.ww3op` | the faster operator of the paper, SWRT9 (K = 9 on 11 offsets) |
+| `inputs/swrt_K36.ww3op` | SWRT36 (K = 36 on 18 offsets) |
+| `inputs/swrt9.ww3op` | SWRT9, the faster set (K = 9 on 11 offsets) |
 | `inputs/ftz.c` | flush-to-zero library for `LD_PRELOAD` |
 | `inputs/Global-real.depth`, `inputs/points.list` | bathymetry and output points of the 1° global simulation of the paper |
 | `namelists/` | namelists of the global simulation |
 | `scripts/` | build, run-directory and Slurm scripts, written for an HPC cluster with environment modules (adapt module names and paths) |
-| `tools/` | scripts that make the SWRT operator for another spectral grid, with the search of the paper (`tools/README.md`) |
-| `single_point/` | setups of the six single-point simulations of the paper, with a patch for their build (`single_point/README.md`) |
+| `tools/` | scripts that make the SWRT operators for another spectral grid, with the search of the paper and the choice of SWRT9 among its candidates in training simulations (`tools/README.md`) |
+| `single_point/` | setups of the six single-point simulations of the paper and of the six training simulations that chose SWRT9, with a patch for their build (`single_point/README.md`) |
 
 The operators of v1.2 (K = 30, and those for other K in `inputs/operators/`) came from an earlier selection and are not part of this version. They remain in the v1.2 archive. The configuration sets of the hybrid (v1.3, v1.4) are not part of this version; they remain in the v1.4 archive.
 
@@ -33,7 +33,7 @@ Two inputs of the global simulation are not included because of their size: the 
 
 ## Spectral grid
 
-The operator file belongs to one spectral grid: 40 frequencies from 0.03453 Hz with a ratio of 1.1, and 24 directions. The model checks this grid when it reads the operator. For another grid, make the operator with `tools/make_operator.py`, which follows the steps of the paper: WRT's quadrature for the grid, the table of its rows, practice spectra, and the selection of the configurations, optionally under a limit on their offsets, and of their gains (see `tools/README.md`).
+The operator file belongs to one spectral grid: 40 frequencies from 0.03453 Hz with a ratio of 1.1, and 24 directions. The model checks this grid when it reads the operator. For another grid, make the operator with `tools/make_operator.py`, which follows the steps of the paper: WRT's quadrature for the grid, the table of its rows, practice spectra, and the selection of the configurations, optionally under a limit on their offsets, and of their gains (see `tools/README.md`). A set as small as SWRT9 is chosen among candidates of the search in training simulations with the model (`tools/candidates.py`, `tools/screen.py`).
 
 ## Build
 

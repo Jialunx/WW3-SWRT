@@ -13,6 +13,16 @@ These are the six 48-h single-point simulations of the paper (its section 4 and 
 
 Each directory holds the inputs of `ww3_grid`, `ww3_strt`, `ww3_shel` and `ww3_ounp`. They are the same for every S_nl option.
 
+## Training simulations
+
+Six more simulations, with the same settings but other winds and swells, chose SWRT9 among its candidates (section 3d of the paper; `tools/screen.py`, see `tools/README.md`). None of them is one of the six simulations above.
+
+| Directory | Scenario |
+|---|---|
+| `t_g12`, `t_g16`, `t_g25` | growth from calm under a wind of 12, 16 or 25 m/s |
+| `t_turn60` | growth under a wind of 16 m/s, turning by 60° at 24 h |
+| `t_swell45`, `t_swell135` | swell (0.075 Hz, Hs 1.8 m, cos^20) with a wind of 12 m/s at 45° or 135° to it |
+
 ## Build
 
 The single-point simulations use the DIA of WAVEWATCH III, where the DIA of `ww3_src/`, set up for the global simulation, skips spectra whose largest action density is below 1e-4. `single_point.patch` restores it. (Up to v1.4, the patch also switched `ww3_src/` from explicit to semi-implicit integration; since v1.5 `ww3_src/` integrates semi-implicitly.) Apply it in a separate copy of the archive, because the global simulation needs the unpatched source. In the top directory of that copy:

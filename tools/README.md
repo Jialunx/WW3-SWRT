@@ -54,8 +54,8 @@ it is given another; use one work directory per grid. Within it, the practice sp
 only if they were made for the same grid and table, so that other values of K take only the search, a few seconds.
 
 The steps can also be run one by one. The scripts with a command line (`build_table.py`, `make_synthetic.py`,
-`build_swrt.py`, `export_operator.py`, `check_operator.py`, `check_nl6.py`, `make_operator.py`) describe their arguments
-with `-h`.
+`build_swrt.py`, `export_operator.py`, `check_operator.py`, `check_nl6.py`, `make_operator.py`, `candidates.py`,
+`screen.py`) describe their arguments with `-h`.
 
 | Script | Step |
 |---|---|
@@ -70,13 +70,42 @@ with `-h`.
 | `check_operator.py` | table and operators against WRT |
 | `check_nl6.py`, `nl6_check/` | NL6 against the Python operator |
 | `make_operator.py` | all steps |
+| `candidates.py` | candidate sets for SWRT9 (see below) |
+| `screen.py` | the candidates in the training simulations with WAVEWATCH III (see below) |
+
+## SWRT9: candidates and training simulations
+
+With nine configurations, sets with a similar error on the practice spectra can differ widely in model simulations, so that
+SWRT9 was chosen in two more steps (section 3d of the paper). Both need the work directory of `make_operator.py` for the
+grid, with its table, practice spectra and Gram matrices.
+
+1. `candidates.py` collects the sets that the search under an offset limit ends at from many starts, and keeps the 40
+   distinct sets with the smallest error. The starts are 240 random sets within limits of 7 to 12 offsets (40 seeds each),
+   each improved by swaps, and the search of step 4 under limits of 6 to 12 offsets (10 seeds each).
+2. `screen.py` runs each candidate for 48 h in six single-point training simulations (`single_point/t_*`, with other winds
+   and swells than the six simulations of the paper), with WRT as the reference, and retains the candidate with the fewest
+   time steps in the six together. It also gives, for each candidate, the largest error in H_s against WRT from 1 h on in
+   each simulation, and its average over the six.
+
+```
+python3 tools/candidates.py --work work_40x24          # K = 9 -> work_40x24/candidates_K9/candidates.json, c01 ... c40
+python3 tools/screen.py --candidates work_40x24/candidates_K9/candidates.json \
+        --nl6 build_nl6/bin --nl2 build_nl2/bin --nl1 build_nl1/bin --ftz ftz.so
+```
+
+The builds are the single-point builds of `single_point/README.md`, and `ftz.so` is the flush-to-zero library
+(`gcc -O2 -shared -fPIC -o ftz.so inputs/ftz.c`). `screen.py` counts the time steps of the source terms as the calls of the
+S_nl routine in `ww3_shel`, with gdb, which finds the routines by their gfortran names. As in the paper's screen, SWRT runs
+there without the weak-wind rule (`--topm 0`, the default) and with the flush-to-zero library. The results are `screen.json`
+and the table `screen.txt`, with the candidates in the order of their time steps; the retained candidate is the first.
 
 ## Run time
 
 The Gram matrices of the 15 000 practice spectra take most of the time. For the paper's grid they took 17 minutes on an
 otherwise idle Intel i9-11900K. The test runs below, made while several other jobs shared that machine, took 50 minutes for
 the paper's grid and 68 minutes for 36 frequencies and 36 directions.
-The search under an offset limit takes one to two minutes per run for K = 36 on the paper's grid.
+The search under an offset limit takes one to two minutes per run for K = 36 on the paper's grid. In the test of v1.6, also
+on a shared machine, `candidates.py` took 14 minutes and `screen.py` 37 minutes with four simulations at a time.
 
 ## Checks
 
@@ -87,6 +116,12 @@ The search under an offset limit takes one to two minutes per run for K = 36 on 
   `inputs/swrt_K36.ww3op`, and it agrees with the file of the paper's runs except for the line with the source name. The
   full table reproduces WRT to 5e-5 of the largest transfer on 300 held-out spectra. On the 80 test spectra of the paper,
   NL6 (v1.3) reproduces the Python operator to 8e-7 in S_nl and 2e-7 in the diagonal term.
+- **SWRT9's choice is reproduced** (v1.6). On the paper's grid, `make_operator.py --ks 36 --offsets 19` gave
+  `inputs/swrt_K36.ww3op` again, and on its work directory `candidates.py` gives the sets and errors of the paper's 310 runs
+  of the search and keeps the same 40 candidates in the same order. In the six training simulations, `screen.py` counts the
+  same time steps as the paper's screen for every candidate and retains SWRT9, with an operator file that agrees with
+  `inputs/swrt9.ww3op` except for the line with the source name. The largest errors in H_s agree with those of the paper's
+  screen to 3e-8.
 - **Another grid** (v1.2, search without an offset limit). For 36 frequencies from 0.03453 Hz (ratio 1.1) and 36 directions, the table has 807 configurations
   (592 on the paper's grid), and the full table reproduces WRT to 4e-5. On held-out practice spectra, the median error of
   SWRT against WRT (`check_operator.py`) is 0.08 with K = 30 and 0.36 with K = 10, against 0.06 and 0.20 on the paper's
